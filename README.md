@@ -47,6 +47,7 @@ Not ECS, but APA. **Actor-Property-Ability**
     }
 ```
 ## Advanced api
+### Working with big structs
 ```
   public struct ExampleBigProperty //some big struct
     {
@@ -68,6 +69,29 @@ Not ECS, but APA. **Actor-Property-Ability**
         ref var value = ref actor.GetRefProp<ExampleBigProperty>(); //you can get struct by ref
     }
 ```
+### How find actors by properties
+```
+    public struct ExampleInitialAbility : IInitializeAbility
+    {
+        public bool IsEnabled { get; set; }
+
+        public void Initialize(World world)
+        {
+            var filterOptions = new FilterOption().With<Test, FloatTest, BoolTest>(); //With - mandatory properties
+            var filter = world.GetFilter(ref filterOptions);
+
+            var filterOptions2 = new FilterOption().With<BoolTest>().WithAny<Test, FloatTest>(); //WithAny - At least one of the properties must be
+            filter = world.GetFilter(ref filterOptions);
+
+            var filterOptions3 = new FilterOption().WithAny<Test, FloatTest>().Without<BoolTest>(); //Without - These properties should not be
+            filter = world.GetFilter(ref filterOptions3);
+
+            var actors = filter.Get(); //return HashSet<IActor>
+        }
+    }
+```
+>[!NOTE]
+> Filters are cached in World and fetched by match from FilterOptions. This means you don't need to cache the filters yourself 
 ## How save link to actor
 ```
     public struct ActorLink
@@ -102,4 +126,123 @@ Open Window -> Actor History
 Use filters to find needed event. Click on event to get details in console.
 
 ![image](https://github.com/user-attachments/assets/2c3868da-d4c8-4e72-a90f-7dad6b4ac8f1)
+# Abilities
+### Initialize ability
+```
+    [BurstCompile]
+    public struct ExampleInitializeAbility: IInitializeAbility
+    {
+        public bool IsEnabled { get; set; }
+        public void Initialize(World world)
+        {
+            //some code
+        }
+    }
+```
+### Update ability
+```
+    [BurstCompile]
+    public struct ExampleUpdateAbility: IUpdateAbility
+    {
+        public bool IsEnabled { get; set; }
+        public void Update(World world)
+        {
+            //some code
+        }
+    }
+```
+### Fixed update ability
+```
+    [BurstCompile]
+    public struct ExampleFixedUpdateAbility: IFixedUpdateAbility
+    {
+        public bool IsEnabled { get; set; }
+        public void FixedUpdate(World world)
+        {
+            //some code
+        }
+    }
+```
+### Tear down ability
+```
+    [BurstCompile]
+    public struct ExampleTearDownAbility: ITearDownAbility
+    {
+        public bool IsEnabled { get; set; }
+        public void TearDown(World world)
+        {
+            //some code
+        }
+    }
+```
+> [!TIP]
+> Add [BurstCompile] attribute to all struct abilities for best performance
+### Reactive ability
+```
+    public struct Test
+    {
+    }
 
+    public class ExampleReactiveAbility: AReactiveAbility
+    {
+        public ExampleReactiveAbility(World world) : base(world)
+        {
+        }
+
+        public override Filter FilterBy()
+        {
+            var filterOption = new FilterOption().With<Test>();
+            return ShaderWorld.GetFilter(ref filterOption);
+        }
+
+        public override bool IsCanExecute(IActor actor)
+        {
+            return true;
+        }
+
+        public override void Execute(HashSet<IActor> actors)
+        {
+            foreach (var VARIABLE in actors)
+            {
+                //some code
+            }
+        }
+    }
+```
+### How run abilities
+```
+    public class ExampleBehaviour : MonoBehaviour
+    {
+        private void Awake()
+        {
+            var world = WorldBridge.Shared;
+            world.AbilityManager.AddAbility(new ExampleInitialAbility()); //add ability via AbilityManager
+            world.AbilityManager.AddAbility(new ExampleReactiveAbility(world));
+        }
+
+        private void Start()
+        {
+            WorldBridge.Shared.AbilityManager.PerformInitialization();
+        }
+
+        private void Update()
+        {
+            WorldBridge.Shared.AbilityManager.PerformUpdate();
+        }
+
+        private void FixedUpdate()
+        {
+            WorldBridge.Shared.AbilityManager.PerformFixedUpdate();
+        }
+
+        private void LateUpdate()
+        {
+            WorldBridge.Shared.AbilityManager.PerformTearDown();
+        }
+
+        private void OnDestroy()
+        {
+            WorldBridge.Shared.AbilityManager.PerformTearDown();
+        }
+    }
+```

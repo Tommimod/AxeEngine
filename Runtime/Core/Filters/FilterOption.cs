@@ -184,15 +184,6 @@ namespace AxeEngine
             return this;
         }
 
-        public FilterOption WithAny<T>() where T : struct
-        {
-            Initialize();
-            var type = typeof(T);
-            _withAnyTypes.Add(type);
-
-            return this;
-        }
-
         public FilterOption WithAny<T, T1>() where T : struct
         {
             Initialize();

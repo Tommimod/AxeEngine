@@ -68,7 +68,7 @@ namespace AxeEngine.Tests
         {
             var actor = _world.CreateActor();
             actor.AddProp<EmptyProperty>().AddProp<IntProperty>().AddProp<BoolProperty>();
-            var filterOptions = new FilterOption().WithAny<BoolProperty>();
+            var filterOptions = new FilterOption().WithAny<BoolProperty, BoolProperty1>();
             var filter = _world.GetFilter(ref filterOptions);
             var actors = filter.Get();
             Assert.IsTrue(actors.Contains(actor));
@@ -79,7 +79,7 @@ namespace AxeEngine.Tests
         {
             var actor = _world.CreateActor();
             actor.AddProp<EmptyProperty>().AddProp<IntProperty>();
-            var filterOptions = new FilterOption().WithAny<BoolProperty>();
+            var filterOptions = new FilterOption().WithAny<BoolProperty, BoolProperty1>();
             var filter = _world.GetFilter(ref filterOptions);
             var actors = filter.Get();
             Assert.IsFalse(actors.Contains(actor));
@@ -90,7 +90,7 @@ namespace AxeEngine.Tests
         {
             var actor = _world.CreateActor();
             actor.AddProp<EmptyProperty>().AddProp<IntProperty>();
-            var filterOptions = new FilterOption().With<IntProperty>().WithAny<BoolProperty>();
+            var filterOptions = new FilterOption().With<IntProperty>().WithAny<BoolProperty, BoolProperty1>();
             var filter = _world.GetFilter(ref filterOptions);
             var actors = filter.Get();
             Assert.IsFalse(actors.Contains(actor));
@@ -128,6 +128,11 @@ namespace AxeEngine.Tests
         }
 
         private struct BoolProperty
+        {
+            public int Value;
+        }
+
+        private struct BoolProperty1
         {
             public int Value;
         }
