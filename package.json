@@ -1,0 +1,15 @@
+﻿{
+  "name": "com.zhyngerstudio.axeengine",
+  "displayName": "Axe Engine",
+  "version": "1.0.0",
+  "unity": "6000.0",
+  "author": {
+    "name": "Yahor Zhynherouski",
+    "email": "tommimod@gmail.com",
+    "url": "https://github.com/Tommimod/AxeEngine"
+  },
+  "description": "AxeEngine - modern ECS-framework for Unity",
+  "dependencies": {
+    "com.unity.burst": "1.8.18"
+  }
+}

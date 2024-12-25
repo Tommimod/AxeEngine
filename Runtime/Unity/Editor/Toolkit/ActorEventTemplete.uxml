@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <ui:VisualElement name="VisualElement" picking-mode="Ignore" style="flex-grow: 1; height: 20px; width: auto; flex-direction: row; align-items: center; justify-content: space-between; background-color: rgba(0, 0, 0, 0.28); border-left-color: rgb(226, 226, 226); border-right-color: rgb(226, 226, 226); border-top-color: rgb(226, 226, 226); border-bottom-color: rgb(226, 226, 226); border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px;">
+        <ui:Label tabindex="-1" text="0" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Index" view-data-key="Index" style="width: 55px;" />
+        <ui:Label tabindex="-1" text="Added" parse-escape-sequences="true" display-tooltip-when-elided="true" name="EventType" view-data-key="EventType" style="width: 55px;" />
+        <ui:Label tabindex="-1" text="Vector" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ComponentType" view-data-key="EntityType" style="width: 100px;" />
+        <ui:Label tabindex="-1" text="1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ComponentValue" view-data-key="ComponentValue" style="width: 150px; font-size: 10px; white-space: nowrap; text-overflow: clip;" />
+        <ui:Label tabindex="-1" text="Potato_1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="GOName" view-data-key="GOName" style="width: 100px;" />
+        <ui:Label tabindex="-1" text="19:33:03" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Time" view-data-key="Time" style="width: 53px;" />
+    </ui:VisualElement>
+</ui:UXML>

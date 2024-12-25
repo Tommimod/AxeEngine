@@ -1,0 +1,178 @@
+using System;
+using System.Collections.Generic;
+using Unity.Burst;
+
+namespace AxeEngine
+{
+    [BurstCompile]
+    public class WorldAbilityManager
+    {
+        private readonly World _world;
+        private readonly List<IAbility> _abilities = new();
+        private readonly List<IInitializeAbility> _initializeAbilities = new();
+        private readonly List<IUpdateAbility> _updateAbilities = new();
+        private readonly List<IFixedUpdateAbility> _fixedUpdateAbilities = new();
+        private readonly List<ITearDownAbility> _tearDownAbilities = new();
+        private readonly List<AReactiveAbility> _reactiveAbilities = new();
+
+        public WorldAbilityManager(World world)
+        {
+            _world = world;
+        }
+
+        public void AddAbility(IAbility ability)
+        {
+            _abilities.Add(ability);
+            ability.IsEnabled = true;
+            if (ability is IInitializeAbility initializeAbility)
+            {
+                _initializeAbilities.Add(initializeAbility);
+            }
+
+            if (ability is IUpdateAbility iUpdateAbility)
+            {
+                _updateAbilities.Add(iUpdateAbility);
+            }
+
+            if (ability is IFixedUpdateAbility iFixedUpdateAbility)
+            {
+                _fixedUpdateAbilities.Add(iFixedUpdateAbility);
+            }
+
+            if (ability is ITearDownAbility iTearDownAbility)
+            {
+                _tearDownAbilities.Add(iTearDownAbility);
+            }
+
+            if (ability is AReactiveAbility reactiveAbility)
+            {
+                _reactiveAbilities.Add(reactiveAbility);
+                reactiveAbility.Filter = reactiveAbility.FilterBy();
+            }
+        }
+
+        public void RemoveAbility(IAbility ability)
+        {
+            if (!_abilities.Contains(ability))
+            {
+                return;
+            }
+
+            _abilities.Remove(ability);
+
+            if (ability is IInitializeAbility initializeAbility)
+            {
+                _initializeAbilities.Remove(initializeAbility);
+            }
+
+            if (ability is IUpdateAbility iUpdateAbility)
+            {
+                _updateAbilities.Remove(iUpdateAbility);
+            }
+
+            if (ability is IFixedUpdateAbility iFixedUpdateAbility)
+            {
+                _fixedUpdateAbilities.Remove(iFixedUpdateAbility);
+            }
+
+            if (ability is ITearDownAbility iTearDownAbility)
+            {
+                _tearDownAbilities.Remove(iTearDownAbility);
+            }
+
+            if (ability is AReactiveAbility reactiveAbility)
+            {
+                _reactiveAbilities.Remove(reactiveAbility);
+            }
+        }
+
+        public void SetActiveAbility(Type aType, bool isActive)
+        {
+            foreach (var aAbility in _abilities)
+            {
+                if (aAbility.GetType() == aType)
+                {
+                    aAbility.IsEnabled = isActive;
+                }
+            }
+        }
+
+        public void PerformInitialization()
+        {
+            foreach (var ability in _initializeAbilities)
+            {
+                if (!ability.IsEnabled)
+                {
+                    continue;
+                }
+
+                ability.Initialize(_world);
+            }
+        }
+
+        public void PerformUpdate()
+        {
+            foreach (var ability in _updateAbilities)
+            {
+                if (!ability.IsEnabled)
+                {
+                    continue;
+                }
+
+                ability.Update(_world);
+            }
+
+            foreach (var reactiveAbility in _reactiveAbilities)
+            {
+                if (reactiveAbility.IsEnabled)
+                {
+                    continue;
+                }
+
+                var execute = true;
+                var actors = reactiveAbility.Filter.Get();
+                foreach (var actor in actors)
+                {
+                    if (!reactiveAbility.IsCanExecute(actor))
+                    {
+                        execute = false;
+                        break;
+                    }
+                }
+
+                if (!execute)
+                {
+                    continue;
+                }
+
+                reactiveAbility.Execute(actors);
+            }
+        }
+
+        public void PerformFixedUpdate()
+        {
+            foreach (var ability in _fixedUpdateAbilities)
+            {
+                if (!ability.IsEnabled)
+                {
+                    continue;
+                }
+
+                ability.FixedUpdate(_world);
+            }
+        }
+
+        public void PerformTearDown()
+        {
+            foreach (var ability in _tearDownAbilities)
+            {
+                if (!ability.IsEnabled)
+                {
+                    continue;
+                }
+
+                ability.TearDown(_world);
+            }
+        }
+    }
+}

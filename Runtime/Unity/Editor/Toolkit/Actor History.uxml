@@ -1,0 +1,22 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <ui:Template name="EntityEventTemplete" src="project://database/Assets/AxeEngine/Unity/Editor/Toolkit/EntityEventTemplete.uxml?fileID=9197481963319205126&amp;guid=295ae36f4521e7a4abe866ff22278e1d&amp;type=3#EntityEventTemplete" />
+    <ui:GroupBox picking-mode="Ignore" style="height: 48px; flex-basis: auto; flex-direction: row; align-items: stretch; justify-content: flex-start; align-self: auto; border-left-color: rgb(51, 51, 51); border-right-color: rgb(51, 51, 51); border-top-color: rgb(51, 51, 51); border-bottom-color: rgb(51, 51, 51);">
+        <ui:Toggle label="Added" value="true" name="Added" view-data-key="Added" style="justify-content: flex-end; align-self: center; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-left-color: rgb(255, 255, 255); border-right-color: rgb(255, 255, 255); border-top-color: rgb(255, 255, 255); border-bottom-color: rgb(255, 255, 255);" />
+        <ui:Toggle label="Replaced" value="false" name="Replaced" view-data-key="Replaced" style="justify-content: flex-end; align-self: center; border-left-color: rgb(255, 255, 255); border-right-color: rgb(255, 255, 255); border-top-color: rgb(255, 255, 255); border-bottom-color: rgb(255, 255, 255); border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px;" />
+        <ui:Toggle label="Removed" value="true" name="Removed" view-data-key="Removed" style="justify-content: flex-end; align-self: center; border-left-color: rgb(255, 255, 255); border-right-color: rgb(255, 255, 255); border-top-color: rgb(255, 255, 255); border-bottom-color: rgb(255, 255, 255); border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px;" />
+    </ui:GroupBox>
+    <ui:VisualElement name="Table">
+        <ui:VisualElement name="VisualElement" style="flex-grow: 1; height: 20px; width: auto; flex-direction: row; align-items: center; justify-content: space-between;">
+            <ui:Label tabindex="-1" text="Index" parse-escape-sequences="true" display-tooltip-when-elided="true" style="width: 55px;" />
+            <ui:Label tabindex="-1" text="Type" parse-escape-sequences="true" display-tooltip-when-elided="true" style="width: 55px;" />
+            <ui:Label tabindex="-1" text="Entity" parse-escape-sequences="true" display-tooltip-when-elided="true" style="width: 100px;" />
+            <ui:Label tabindex="-1" text="Component" parse-escape-sequences="true" display-tooltip-when-elided="true" style="width: 100px;" />
+            <ui:Label tabindex="-1" text="Value" parse-escape-sequences="true" display-tooltip-when-elided="true" style="width: 153px;" />
+            <ui:Label tabindex="-1" text="Game Object" parse-escape-sequences="true" display-tooltip-when-elided="true" style="width: 100px;" />
+            <ui:Label tabindex="-1" text="Time" parse-escape-sequences="true" display-tooltip-when-elided="true" style="width: 57px;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:ScrollView scroll-deceleration-rate="0,135" elasticity="0,1" name="ScrollView" horizontal-scroller-visibility="Hidden" picking-mode="Ignore" view-data-key="ScrollView" style="flex-basis: 100%; padding-top: 5px; margin-top: 1px; margin-right: 1px; margin-bottom: 1px; margin-left: 1px;">
+        <ui:Instance template="EntityEventTemplete" name="EntityEventTemplete" />
+    </ui:ScrollView>
+</ui:UXML>

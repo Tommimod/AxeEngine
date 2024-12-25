@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <ui:VisualElement style="flex-grow: 1; height: auto; width: 100%; align-self: center;">
+        <ui:DropdownField enabled="true" name="ComponentsDropdown" binding-path="ComponentsDropdown" style="width: 100%;">
+            <ui:Button text="Add" name="AddButton" binding-path="AddButton" style="width: 25%;" />
+        </ui:DropdownField>
+        <ui:ListView name="ComponentList" binding-path="ComponentList" style="width: 95%; height: 95%; padding-top: 5px; padding-right: 5px; padding-bottom: 5px; padding-left: 5px; margin-top: 5px; margin-right: 5px; margin-bottom: 5px; margin-left: 5px; align-self: center;" />
+    </ui:VisualElement>
+</ui:UXML>
