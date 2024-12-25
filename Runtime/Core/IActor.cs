@@ -20,6 +20,7 @@ namespace AxeEngine
         Action<IActor, Type> OnPropertyRemoved { get; set; }
         bool HasProp<T>() where T : struct;
         T GetProp<T>() where T : struct;
+        ref T GetRefProp<T>() where T : struct;
         IActor AddProp<T>(ref T property) where T : struct;
         IActor AddProp<T>(T property = default) where T : struct;
         IActor ReplaceProp<T>(ref T property) where T : struct;
