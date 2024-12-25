@@ -3,9 +3,9 @@ AxeEngine - modern ECS-framework for Unity.
 Not ECS, but APA. **Actor-Property-Ability**
 
 # Installation
-1. Open Window -> Package Manager -> + -> Install package from git URL
-2. Past https://github.com/Tommimod/AxeEngine.git
-3. Press "Install"
+1. Download source code
+2. Double click by AxeEnginePackage.unitypackage  
+*Download in package manager from git URL is not supported, because package can't see Assembly-Charp, which is required for reflections*
 
 # Features
 - support any structs as property
@@ -92,9 +92,11 @@ Not ECS, but APA. **Actor-Property-Ability**
 ```
 # Unity Integration
 1. On game object add AxeEditorActor component
-2. for display properties in inspector add [AxeProperty] attribute
+2. for display properties in inspector add [AxeProperty] attribute. Also add [Serializable] attribute if some fields not visible
+
 ![img.png](img.png)
 
 # Actors History
 Open Window -> Actor History
+
 ![img_1.png](img_1.png)
