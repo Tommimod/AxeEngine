@@ -19,6 +19,13 @@ namespace AxeEngine.Editor
             {
                 _actor.RestorePropFromObject(obj);
             }
+
+            if (!_actor.HasProp<UnityObject>())
+            {
+                var obj = new UnityObject { Value = gameObject };
+                _actor.AddProp(ref obj);
+                Properties.Add(obj);
+            }
         }
 
         public void Validate()
