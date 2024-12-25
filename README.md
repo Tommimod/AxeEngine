@@ -94,9 +94,6 @@ Not ECS, but APA. **Actor-Property-Ability**
 1. On game object add AxeEditorActor component
 2. for display properties in inspector add [AxeProperty] attribute. Also add [Serializable] attribute if some fields not visible
 
-![img.png](img.png)
-
 # Actors History
 Open Window -> Actor History
-
-![img_1.png](img_1.png)
+Use filters to find needed event. Click on event to get details in console.
