@@ -12,8 +12,8 @@ namespace AxeEngine.Editor.Toolkit
     [CustomEditor(typeof(AxeEditorActor))]
     public class AxeInspectorToolkit : UnityEditor.Editor
     {
-        public VisualTreeAsset _inspectorTreeAsset;
-        public VisualTreeAsset _componentTreeAsset;
+        private VisualTreeAsset _inspectorTreeAsset;
+        private VisualTreeAsset _componentTreeAsset;
         private VisualElement _myInspector;
         private ListView _componentList;
         private Button _addButton;
@@ -26,6 +26,8 @@ namespace AxeEngine.Editor.Toolkit
 
         public override VisualElement CreateInspectorGUI()
         {
+            _inspectorTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/AxeEngineRepo/Runtime/Unity/Editor/Toolkit/AxeInspectorToolkit.uxml");
+            _componentTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/AxeEngineRepo/Runtime/Unity/Editor/Toolkit/AxeComponentToolkit.uxml");
             _editorActor = (AxeEditorActor)target;
             _allTypes = AxeReflection.GetAllAxeTypes();
 
@@ -41,14 +43,6 @@ namespace AxeEngine.Editor.Toolkit
             HandleComponentList();
             _addButton.clicked += OnAddButtonClicked;
             return _myInspector;
-        }
-
-        private void OnDestroy()
-        {
-            _componentsDropdown?.UnregisterCallback<ChangeEvent<string>>(OnComponentSelected);
-            _addButton.clicked -= OnAddButtonClicked;
-            _myInspector.Clear();
-            _elementToArray.Clear();
         }
 
         private void HandleComponentDropdown()

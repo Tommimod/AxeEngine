@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
-    <ui:Template name="EntityEventTemplete" src="project://database/Assets/AxeEngine/Unity/Editor/Toolkit/EntityEventTemplete.uxml?fileID=9197481963319205126&amp;guid=295ae36f4521e7a4abe866ff22278e1d&amp;type=3#EntityEventTemplete" />
+    <ui:Template name="EntityEventTemplete" src="project://database/Assets/AxeEngineRepo/Runtime/Unity/Editor/Toolkit/ActorEventTemplete.uxml?fileID=9197481963319205126&amp;guid=295ae36f4521e7a4abe866ff22278e1d&amp;type=3#ActorEventTemplete" />
     <ui:GroupBox picking-mode="Ignore" style="height: 48px; flex-basis: auto; flex-direction: row; align-items: stretch; justify-content: flex-start; align-self: auto; border-left-color: rgb(51, 51, 51); border-right-color: rgb(51, 51, 51); border-top-color: rgb(51, 51, 51); border-bottom-color: rgb(51, 51, 51);">
         <ui:Toggle label="Added" value="true" name="Added" view-data-key="Added" style="justify-content: flex-end; align-self: center; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-left-color: rgb(255, 255, 255); border-right-color: rgb(255, 255, 255); border-top-color: rgb(255, 255, 255); border-bottom-color: rgb(255, 255, 255);" />
         <ui:Toggle label="Replaced" value="false" name="Replaced" view-data-key="Replaced" style="justify-content: flex-end; align-self: center; border-left-color: rgb(255, 255, 255); border-right-color: rgb(255, 255, 255); border-top-color: rgb(255, 255, 255); border-bottom-color: rgb(255, 255, 255); border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px;" />
@@ -9,7 +9,6 @@
         <ui:VisualElement name="VisualElement" style="flex-grow: 1; height: 20px; width: auto; flex-direction: row; align-items: center; justify-content: space-between;">
             <ui:Label tabindex="-1" text="Index" parse-escape-sequences="true" display-tooltip-when-elided="true" style="width: 55px;" />
             <ui:Label tabindex="-1" text="Type" parse-escape-sequences="true" display-tooltip-when-elided="true" style="width: 55px;" />
-            <ui:Label tabindex="-1" text="Entity" parse-escape-sequences="true" display-tooltip-when-elided="true" style="width: 100px;" />
             <ui:Label tabindex="-1" text="Component" parse-escape-sequences="true" display-tooltip-when-elided="true" style="width: 100px;" />
             <ui:Label tabindex="-1" text="Value" parse-escape-sequences="true" display-tooltip-when-elided="true" style="width: 153px;" />
             <ui:Label tabindex="-1" text="Game Object" parse-escape-sequences="true" display-tooltip-when-elided="true" style="width: 100px;" />
