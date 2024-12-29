@@ -5,7 +5,7 @@ using Unity.Burst;
 namespace AxeEngine
 {
     [BurstCompile]
-    public class WorldAbilityManager
+    public class WorldAbilityManager : IDisposable
     {
         private readonly World _world;
         private readonly List<IAbility> _abilities = new();
@@ -47,7 +47,8 @@ namespace AxeEngine
             if (ability is AReactiveAbility reactiveAbility)
             {
                 _reactiveAbilities.Add(reactiveAbility);
-                reactiveAbility.Filter = reactiveAbility.FilterBy();
+                reactiveAbility.Trigger = reactiveAbility.TriggerBy();
+                _world.AddTrigger(reactiveAbility.Trigger);
             }
         }
 
@@ -124,20 +125,27 @@ namespace AxeEngine
 
             foreach (var reactiveAbility in _reactiveAbilities)
             {
-                if (reactiveAbility.IsEnabled)
+                if (!reactiveAbility.IsEnabled)
                 {
                     continue;
                 }
 
                 var execute = true;
-                var actors = reactiveAbility.Filter.Get();
+                var actors = reactiveAbility.Trigger.GetValidActors();
+                if (actors.Count == 0)
+                {
+                    continue;
+                }
+
                 foreach (var actor in actors)
                 {
-                    if (!reactiveAbility.IsCanExecute(actor))
+                    if (reactiveAbility.IsCanExecute(actor))
                     {
-                        execute = false;
-                        break;
+                        continue;
                     }
+
+                    execute = false;
+                    break;
                 }
 
                 if (!execute)
@@ -173,6 +181,18 @@ namespace AxeEngine
 
                 ability.TearDown(_world);
             }
+
+            _world.ClearTriggers();
+        }
+
+        public void Dispose()
+        {
+            _abilities.Clear();
+            _initializeAbilities.Clear();
+            _updateAbilities.Clear();
+            _fixedUpdateAbilities.Clear();
+            _tearDownAbilities.Clear();
+            _reactiveAbilities.Clear();
         }
     }
 }

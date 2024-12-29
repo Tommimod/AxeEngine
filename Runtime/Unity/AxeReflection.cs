@@ -15,7 +15,7 @@ namespace AxeEngine.Editor
             {
                 data.AddRange(assembly
                     .GetTypes()
-                    .Where(myType => myType.IsPublic && myType.GetCustomAttribute<AxeProperty>() != null && !myType.GetCustomAttribute<AxeProperty>().IgnoreInInspector).ToList());
+                    .Where(myType => myType.IsPublic && myType.GetCustomAttribute<AxeProperty>() != null).ToList());
             }
 
             return data;

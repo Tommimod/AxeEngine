@@ -180,32 +180,47 @@ Use filters to find needed event. Click on event to get details in console.
 > Add [BurstCompile] attribute to all struct abilities for best performance
 ### Reactive ability
 ```
-    public struct Test
+    public struct ExampleIntProperty
     {
+        public int Value;
     }
 
-    public class ExampleReactiveAbility: AReactiveAbility
+    public struct ExampleFloatProperty
+    {
+        public float Value;
+    }
+
+    public struct ExampleBoolProperty
+    {
+        public bool Value;
+    }
+
+    public class ExampleReactiveAbility : AReactiveAbility
     {
         public ExampleReactiveAbility(World world) : base(world)
         {
         }
 
-        public override Filter FilterBy()
+        public override Trigger TriggerBy()
         {
-            var filterOption = FilterOption.Empty.With<Test>();
-            return ShaderWorld.GetFilter(ref filterOption);
+            return new Trigger().Added<ExampleIntProperty>().Removed<ExampleFloatProperty>().Replaced<ExampleBoolProperty>();
+            //As with FilterOptions, you can specify multiple types in a row, separated by commas
+            //For the trigger to work, it is enough to perform at least one condition
+            //Trigger collect actors in one frame. After WorldAbilityManager.PerformTearDown all collected actors will be removed
         }
 
+        //Additional validation before execution
         public override bool IsCanExecute(IActor actor)
         {
-            return true;
+            return actor.HasProp<ExampleIntProperty>() && actor.GetProp<ExampleIntProperty>().Value > 2;
         }
 
+        //HashSet with actors which passed TriggerBy and IsCanExecute
         public override void Execute(HashSet<IActor> actors)
         {
-            foreach (var VARIABLE in actors)
+            foreach (var actor in actors)
             {
-                //some code
+                // do something
             }
         }
     }
