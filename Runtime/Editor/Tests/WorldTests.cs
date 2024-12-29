@@ -27,7 +27,7 @@ namespace AxeEngine.Tests
             var actor = _world.CreateActor();
             Assert.NotNull(actor);
 
-            var filterOptions = new FilterOption().With<TestProperty>();
+            var filterOptions = FilterOption.Empty.With<TestProperty>();
             var filter = _world.GetFilter(ref filterOptions);
             var actors = filter.Get();
             var isContains = actors.Contains(actor);
@@ -42,7 +42,7 @@ namespace AxeEngine.Tests
             actor.AddProp(ref prop);
             Assert.NotNull(actor);
 
-            var filterOptions = new FilterOption().With<TestProperty>();
+            var filterOptions = FilterOption.Empty.With<TestProperty>();
             var filter = _world.GetFilter(ref filterOptions);
             var actors = filter.Get();
             var isContains = actors.Contains(actor);
@@ -59,7 +59,7 @@ namespace AxeEngine.Tests
 
             _world.DestroyActor(actor);
 
-            var filterOptions = new FilterOption().With<TestProperty>();
+            var filterOptions = FilterOption.Empty.With<TestProperty>();
             var filter = _world.GetFilter(ref filterOptions);
             var actors = filter.Get();
             var isContains = actors.Contains(actor);
@@ -75,7 +75,7 @@ namespace AxeEngine.Tests
             Assert.NotNull(actor);
 
 
-            var filterOptions = new FilterOption().With<TestProperty>();
+            var filterOptions = FilterOption.Empty.With<TestProperty>();
             var filter = _world.GetFilter(ref filterOptions);
 
             _world.DestroyActor(actor);
@@ -128,7 +128,7 @@ namespace AxeEngine.Tests
         {
             var actor = _world.CreateActor();
             actor.AddProp<TestProperty>();
-            var filterOptions = new FilterOption().With<TestProperty>();
+            var filterOptions = FilterOption.Empty.With<TestProperty>();
             var filter = _world.GetFilter(ref filterOptions);
             var actors = filter.Get();
             Assert.IsTrue(actors.Count == 1);
@@ -152,7 +152,7 @@ namespace AxeEngine.Tests
         {
             var actor = _world.CreateActor();
             actor.AddProp<TestProperty>();
-            var filterOptions = new FilterOption().With<TestProperty>();
+            var filterOptions = FilterOption.Empty.With<TestProperty>();
             var filter = _world.GetFilter(ref filterOptions);
             var actors = filter.Get();
             Assert.IsTrue(actors.Count == 1);
