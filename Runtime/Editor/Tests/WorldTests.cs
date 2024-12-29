@@ -176,6 +176,17 @@ namespace AxeEngine.Tests
             Assert.IsTrue(actor2.Id == 1);
         }
 
+        [Test]
+        public void CreateActor_EnableAndDisableProperty_True()
+        {
+            var actor = _world.CreateActor();
+            actor.SetPropertyEnabled<TestProperty>(true);
+            Assert.IsTrue(actor.HasProp<TestProperty>());
+
+            actor.SetPropertyEnabled<TestProperty>(false);
+            Assert.IsFalse(actor.HasProp<TestProperty>());
+        }
+
         private struct TestProperty
         {
         }

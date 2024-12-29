@@ -30,8 +30,27 @@ namespace AxeEngine
         }
 
         public bool HasProp<T>() where T : struct => _world.GetChunk<T>().Has(Id);
-        public T GetProp<T>() where T : struct => _world.GetChunk<T>().Get(Id);
-        public ref T GetRefProp<T>() where T : struct => ref _world.GetChunk<T>().Get(Id);
+        public ref T GetProp<T>() where T : struct => ref _world.GetChunk<T>().Get(Id);
+
+        public IActor SetPropertyEnabled<T>(bool isEnabled) where T : struct
+        {
+            if (isEnabled)
+            {
+                if (!HasProp<T>())
+                {
+                    AddProp<T>();
+                }
+            }
+            else
+            {
+                if (HasProp<T>())
+                {
+                    RemoveProp<T>();
+                }
+            }
+
+            return this;
+        }
 
         public IActor AddProp<T>(ref T property) where T : struct
         {
