@@ -30,7 +30,7 @@ namespace AxeEngine.Editor
         public static bool IsInteger(this Type type) => type == typeof(int) || type == typeof(uint) || type == typeof(long) || type == typeof(ulong);
         public static bool IsFloat(this Type type) => type == typeof(float) || type == typeof(double);
         public static bool IsString(this Type type) => type == typeof(string);
-        public static bool IsUnityObject(this Type type) => type.BaseType == typeof(UnityEngine.Object) || type.BaseType == typeof(ScriptableObject);
+        public static bool IsUnityObject(this Type type) => type.BaseType == typeof(UnityEngine.MonoBehaviour) || type.BaseType == typeof(UnityEngine.Object) || type.BaseType == typeof(ScriptableObject);
         public static bool IsVector2(this Type type) => type == typeof(Vector2);
         public static bool IsVector3(this Type type) => type == typeof(Vector3);
         public static bool IsVector4(this Type type) => type == typeof(Vector4) || type == typeof(Quaternion);

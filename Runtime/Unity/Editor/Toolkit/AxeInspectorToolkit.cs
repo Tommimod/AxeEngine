@@ -84,6 +84,7 @@ namespace AxeEngine.Editor.Toolkit
 
             _addButton.SetEnabled(false);
             HandleComponentList();
+            EditorUtility.SetDirty(target);
         }
 
         private void HandleComponentList()
@@ -105,6 +106,7 @@ namespace AxeEngine.Editor.Toolkit
                     _editorActor.Validate();
                     componentVisualElement.RemoveFromHierarchy();
                     HandleAddButton(_componentsDropdown.value);
+                    EditorUtility.SetDirty(target);
                 };
 
                 var currentType = component.GetType();
@@ -130,6 +132,7 @@ namespace AxeEngine.Editor.Toolkit
         {
             var componentInstance = _editorActor.Properties.FirstOrDefault(x => x == component);
             componentInstance?.GetType().GetField(fieldInfo.Name).SetValue(componentInstance, value);
+            EditorUtility.SetDirty(target);
         }
 
         private VisualElement CreateField(AxeFieldInfo fieldInfo, VisualElement fieldContainer, object component, Label fieldName = null)
