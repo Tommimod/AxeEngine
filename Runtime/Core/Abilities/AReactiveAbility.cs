@@ -6,16 +6,16 @@ namespace AxeEngine
     [BurstCompile]
     public abstract class AReactiveAbility : IAbility
     {
-        internal Filter Filter;
+        internal Trigger Trigger;
         public bool IsEnabled { get; set; }
-        protected readonly World ShaderWorld;
+        protected readonly World SharedWorld;
 
         protected AReactiveAbility(World world)
         {
-            ShaderWorld = world;
+            SharedWorld = world;
         }
 
-        public abstract Filter FilterBy();
+        public abstract Trigger TriggerBy();
         public abstract bool IsCanExecute(IActor actor);
         public abstract void Execute(HashSet<IActor> actors);
     }

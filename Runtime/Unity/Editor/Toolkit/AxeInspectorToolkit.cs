@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -47,7 +48,11 @@ namespace AxeEngine.Editor.Toolkit
 
         private void HandleComponentDropdown()
         {
-            _componentsDropdown.choices = _allTypes.Select(x => x.Name).ToList();
+            for (var i = 0; i < _allTypes.Count; i++)
+            {
+                var type = _allTypes[i];
+                _componentsDropdown.choices.Add($"{type.GetCustomAttribute<AxeProperty>().Path}{type.Name}");
+            }
             _componentsDropdown.value ??= _componentsDropdown.choices[0] ?? string.Empty;
             _componentsDropdown.RegisterCallback<ChangeEvent<string>>(OnComponentSelected);
         }

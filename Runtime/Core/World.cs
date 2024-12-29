@@ -24,6 +24,7 @@ namespace AxeEngine
 
         private readonly HashSet<IActor> _actors = new();
         private readonly HashSet<Filter> _filters = new();
+        private readonly HashSet<Trigger> _triggers = new();
         private readonly Dictionary<Type, object> _componentStorage = new();
         private readonly WorldAbilityManager _abilityManager;
         private ObjectPool<IActor> _objectPool;
@@ -93,6 +94,16 @@ namespace AxeEngine
             return default;
         }
 
+        internal void AddTrigger(Trigger trigger) => _triggers.Add(trigger);
+
+        internal void ClearTriggers()
+        {
+            foreach (var trigger in _triggers)
+            {
+                trigger.Clear();
+            }
+        }
+
         internal Chunk<T> GetChunk<T>() where T : struct
         {
             if (!_componentStorage.TryGetValue(typeof(T), out var storage))
@@ -160,10 +171,19 @@ namespace AxeEngine
             {
                 filter.OnActorChanged(actor);
             }
+
+            foreach (var trigger in _triggers)
+            {
+                trigger.ValidateForTrigger(actor, actorProperty, TriggerAction.Added);
+            }
         }
 
         private void OnActorReplaceProperty(IActor actor, Type actorProperty)
         {
+            foreach (var trigger in _triggers)
+            {
+                trigger.ValidateForTrigger(actor, actorProperty, TriggerAction.Replaced);
+            }
         }
 
         private void OnActorRemoveProperty(IActor actor, Type actorProperty)
@@ -172,10 +192,16 @@ namespace AxeEngine
             {
                 filter.OnActorChanged(actor);
             }
+
+            foreach (var trigger in _triggers)
+            {
+                trigger.ValidateForTrigger(actor, actorProperty, TriggerAction.Removed);
+            }
         }
 
         public void Dispose()
         {
+            _abilityManager?.Dispose();
             _objectPool?.Dispose();
             _actors.Clear();
             _filters.Clear();
