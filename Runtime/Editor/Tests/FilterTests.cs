@@ -24,7 +24,7 @@ namespace AxeEngine.Tests
         {
             var actor = _world.CreateActor();
             actor.AddProp<EmptyProperty>();
-            var filterOptions = new FilterOption().With<EmptyProperty>();
+            var filterOptions = FilterOption.Empty.With<EmptyProperty>();
             var filter = _world.GetFilter(ref filterOptions);
             var actors = filter.Get();
             Assert.IsTrue(actors.Contains(actor));
@@ -35,7 +35,7 @@ namespace AxeEngine.Tests
         {
             var actor = _world.CreateActor();
             actor.AddProp<EmptyProperty>();
-            var filterOptions = new FilterOption().With<EmptyProperty, IntProperty>();
+            var filterOptions = FilterOption.Empty.With<EmptyProperty, IntProperty>();
             var filter = _world.GetFilter(ref filterOptions);
             var actors = filter.Get();
             Assert.IsFalse(actors.Contains(actor));
@@ -46,7 +46,7 @@ namespace AxeEngine.Tests
         {
             var actor = _world.CreateActor();
             actor.AddProp<EmptyProperty>().AddProp<IntProperty>();
-            var filterOptions = new FilterOption().With<EmptyProperty, IntProperty>();
+            var filterOptions = FilterOption.Empty.With<EmptyProperty, IntProperty>();
             var filter = _world.GetFilter(ref filterOptions);
             var actors = filter.Get();
             Assert.IsTrue(actors.Contains(actor));
@@ -57,7 +57,7 @@ namespace AxeEngine.Tests
         {
             var actor = _world.CreateActor();
             actor.AddProp<EmptyProperty>().AddProp<IntProperty>();
-            var filterOptions = new FilterOption().With<EmptyProperty>();
+            var filterOptions = FilterOption.Empty.With<EmptyProperty>();
             var filter = _world.GetFilter(ref filterOptions);
             var actors = filter.Get();
             Assert.IsTrue(actors.Contains(actor));
@@ -68,7 +68,7 @@ namespace AxeEngine.Tests
         {
             var actor = _world.CreateActor();
             actor.AddProp<EmptyProperty>().AddProp<IntProperty>().AddProp<BoolProperty>();
-            var filterOptions = new FilterOption().WithAny<BoolProperty, BoolProperty1>();
+            var filterOptions = FilterOption.Empty.WithAny<BoolProperty, BoolProperty1>();
             var filter = _world.GetFilter(ref filterOptions);
             var actors = filter.Get();
             Assert.IsTrue(actors.Contains(actor));
@@ -79,7 +79,7 @@ namespace AxeEngine.Tests
         {
             var actor = _world.CreateActor();
             actor.AddProp<EmptyProperty>().AddProp<IntProperty>();
-            var filterOptions = new FilterOption().WithAny<BoolProperty, BoolProperty1>();
+            var filterOptions = FilterOption.Empty.WithAny<BoolProperty, BoolProperty1>();
             var filter = _world.GetFilter(ref filterOptions);
             var actors = filter.Get();
             Assert.IsFalse(actors.Contains(actor));
@@ -90,7 +90,7 @@ namespace AxeEngine.Tests
         {
             var actor = _world.CreateActor();
             actor.AddProp<EmptyProperty>().AddProp<IntProperty>();
-            var filterOptions = new FilterOption().With<IntProperty>().WithAny<BoolProperty, BoolProperty1>();
+            var filterOptions = FilterOption.Empty.With<IntProperty>().WithAny<BoolProperty, BoolProperty1>();
             var filter = _world.GetFilter(ref filterOptions);
             var actors = filter.Get();
             Assert.IsFalse(actors.Contains(actor));
@@ -101,7 +101,7 @@ namespace AxeEngine.Tests
         {
             var actor = _world.CreateActor();
             actor.AddProp<EmptyProperty>().AddProp<IntProperty>();
-            var filterOptions = new FilterOption().Without<BoolProperty>();
+            var filterOptions = FilterOption.Empty.Without<BoolProperty>();
             var filter = _world.GetFilter(ref filterOptions);
             var actors = filter.Get();
             Assert.IsTrue(actors.Contains(actor));
@@ -112,7 +112,7 @@ namespace AxeEngine.Tests
         {
             var actor = _world.CreateActor();
             actor.AddProp<EmptyProperty>().AddProp<IntProperty>();
-            var filterOptions = new FilterOption().Without<IntProperty>();
+            var filterOptions = FilterOption.Empty.Without<IntProperty>();
             var filter = _world.GetFilter(ref filterOptions);
             var actors = filter.Get();
             Assert.IsFalse(actors.Contains(actor));

@@ -77,13 +77,14 @@ Not ECS, but APA. **Actor-Property-Ability**
 
         public void Initialize(World world)
         {
-            var filterOptions = new FilterOption().With<Test, FloatTest, BoolTest>(); //With - mandatory properties
+            //FilterOption.Empty - initialized struct with empty arrays
+            var filterOptions = FilterOption.Empty.With<Test, FloatTest, BoolTest>(); //With - mandatory properties
             var filter = world.GetFilter(ref filterOptions);
 
-            var filterOptions2 = new FilterOption().With<BoolTest>().WithAny<Test, FloatTest>(); //WithAny - At least one of the properties must be
+            var filterOptions2 = FilterOption.Empty.With<BoolTest>().WithAny<Test, FloatTest>(); //WithAny - At least one of the properties must be
             filter = world.GetFilter(ref filterOptions);
 
-            var filterOptions3 = new FilterOption().WithAny<Test, FloatTest>().Without<BoolTest>(); //Without - These properties should not be
+            var filterOptions3 = FilterOption.Empty.WithAny<Test, FloatTest>().Without<BoolTest>(); //Without - These properties should not be
             filter = world.GetFilter(ref filterOptions3);
 
             var actors = filter.Get(); //return HashSet<IActor>
@@ -191,7 +192,7 @@ Use filters to find needed event. Click on event to get details in console.
 
         public override Filter FilterBy()
         {
-            var filterOption = new FilterOption().With<Test>();
+            var filterOption = FilterOption.Empty.With<Test>();
             return ShaderWorld.GetFilter(ref filterOption);
         }
 
