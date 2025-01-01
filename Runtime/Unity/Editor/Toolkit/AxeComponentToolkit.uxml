@@ -3,9 +3,6 @@
         <ui:Button text="X" name="Remove" binding-path="Remove" style="width: 15px; align-self: flex-start; justify-content: flex-start; height: 15px; padding-bottom: 0; align-items: center; margin-top: 5px;" />
         <ui:VisualElement name="VisualElement" style="flex-grow: 1; align-self: stretch; width: 90%; height: auto; align-items: flex-start; justify-content: flex-start; flex-direction: column; border-left-color: rgb(255, 255, 255); border-right-color: rgb(255, 255, 255); border-top-color: rgb(255, 255, 255); border-bottom-color: rgb(255, 255, 255); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0; border-top-left-radius: 7px; border-top-right-radius: 7px; border-bottom-right-radius: 7px; border-bottom-left-radius: 7px; background-color: rgba(0, 0, 0, 0);">
             <ui:Label text="ComponentType" name="ComponentType" binding-path="ComponentType" style="-unity-font-style: bold; font-size: 15px; text-overflow: ellipsis; margin-top: 5px; margin-right: 5px; margin-bottom: 5px; margin-left: 5px;" />
-            <ui:VisualElement name="FieldInfo" binding-path="FieldContainer" focusable="true" view-data-key="FieldInfo" style="flex-grow: 1; width: 100%; flex-direction: column; -unity-font-style: italic; padding-left: 5px; padding-top: 0; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-bottom: 5px;">
-                <ui:Label text="label" name="FieldName" selectable="true" binding-path="FieldName" parse-escape-sequences="true" style="width: 10%; height: 10px;" />
-            </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
