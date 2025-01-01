@@ -4,11 +4,10 @@ namespace AxeEngine
 {
     public class Filter
     {
-        public FilterOption Options;
+        public FilterOption Options { get; private set; }
 
         private readonly World _world;
         private readonly HashSet<IActor> _actors = new();
-        private FilterOption _filterOption;
 
         private bool _isBuild;
 
@@ -27,7 +26,7 @@ namespace AxeEngine
 
         internal void OnActorChanged(IActor actor)
         {
-            var isValid = _filterOption.IsValid(actor);
+            var isValid = Options.IsValid(actor);
             if (isValid)
             {
                 _actors.Add(actor);
@@ -53,11 +52,11 @@ namespace AxeEngine
                 return this;
             }
 
-            _filterOption = options;
+            Options = options;
             var allActors = _world.GetAllActors();
             foreach (var actor in allActors)
             {
-                var isValid = _filterOption.IsValid(actor);
+                var isValid = Options.IsValid(actor);
                 if (!isValid)
                 {
                     continue;
