@@ -15,6 +15,7 @@ namespace AxeEngine.Editor.Toolkit
     {
         private VisualTreeAsset _inspectorTreeAsset;
         private VisualTreeAsset _componentTreeAsset;
+        private VisualTreeAsset _fieldInfoAsset;
         private VisualElement _myInspector;
         private ListView _componentList;
         private Button _addButton;
@@ -29,6 +30,7 @@ namespace AxeEngine.Editor.Toolkit
         {
             _inspectorTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/AxeEngineRepo/Runtime/Unity/Editor/Toolkit/AxeInspectorToolkit.uxml");
             _componentTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/AxeEngineRepo/Runtime/Unity/Editor/Toolkit/AxeComponentToolkit.uxml");
+            _fieldInfoAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/AxeEngineRepo/Runtime/Unity/Editor/Toolkit/AxeComponentFieldInfoToolkit.uxml");
             _editorActor = (AxeEditorActor)target;
             _allTypes = AxeReflection.GetAllAxeTypes();
 
@@ -53,6 +55,7 @@ namespace AxeEngine.Editor.Toolkit
                 var type = _allTypes[i];
                 _componentsDropdown.choices.Add($"{type.GetCustomAttribute<AxeProperty>().Path}{type.Name}");
             }
+
             _componentsDropdown.value ??= _componentsDropdown.choices[0] ?? string.Empty;
             _componentsDropdown.RegisterCallback<ChangeEvent<string>>(OnComponentSelected);
         }
@@ -112,16 +115,19 @@ namespace AxeEngine.Editor.Toolkit
                 var currentType = component.GetType();
                 var fieldsInfo = currentType.GetAllFields();
 
-                var fieldContainer = componentVisualElement.hierarchy[0].hierarchy[1].hierarchy[1];
-                var fieldName = fieldContainer.hierarchy.Children().ToArray()[0] as Label;
-                if (fieldsInfo.Length == 0)
-                {
-                    fieldContainer.Remove(fieldName);
-                    continue;
-                }
-
                 foreach (var fieldInfo in fieldsInfo)
                 {
+                    VisualElement fieldContainer = new VisualElement();
+                    componentVisualElement.hierarchy[0].hierarchy[1].hierarchy.Add(fieldContainer);
+                    _fieldInfoAsset.CloneTree(fieldContainer);
+                    fieldContainer.style.width = Length.Percent(100);
+                    var fieldName = fieldContainer.Q<Label>("FieldName");
+                    if (fieldsInfo.Length == 0)
+                    {
+                        fieldName.RemoveFromHierarchy();
+                        break;
+                    }
+
                     var customInfo = new AxeFieldInfo(fieldInfo.Name, fieldInfo.FieldType, fieldInfo.GetValue(component));
                     CreateField(customInfo, fieldContainer, component, fieldName);
                 }
@@ -148,7 +154,22 @@ namespace AxeEngine.Editor.Toolkit
             {
                 var value = (int)fieldInfo.Value;
                 visualElement = new IntegerField { value = value };
-                fieldContainer.Add(visualElement);
+                if (fieldContainer.hierarchy.childCount == 0)
+                {
+                    fieldContainer.contentContainer.Add(visualElement);
+                }
+                else
+                {
+                    if (fieldName == null)
+                    {
+                        fieldContainer.hierarchy.Add(visualElement);
+                    }
+                    else
+                    {
+                        fieldContainer.hierarchy[0].Add(visualElement);
+                    }
+                }
+
                 visualElement.RegisterCallback<ChangeEvent<int>>(OnChanged);
 
                 void OnChanged(ChangeEvent<int> evt)
@@ -160,7 +181,22 @@ namespace AxeEngine.Editor.Toolkit
             {
                 var value = (float)fieldInfo.Value;
                 visualElement = new FloatField { value = value };
-                fieldContainer.Add(visualElement);
+                if (fieldContainer.hierarchy.childCount == 0)
+                {
+                    fieldContainer.contentContainer.Add(visualElement);
+                }
+                else
+                {
+                    if (fieldName == null)
+                    {
+                        fieldContainer.hierarchy.Add(visualElement);
+                    }
+                    else
+                    {
+                        fieldContainer.hierarchy[0].Add(visualElement);
+                    }
+                }
+
                 visualElement.RegisterCallback<ChangeEvent<float>>(OnChanged);
 
                 void OnChanged(ChangeEvent<float> evt)
@@ -172,7 +208,22 @@ namespace AxeEngine.Editor.Toolkit
             {
                 var value = (bool)fieldInfo.Value;
                 visualElement = new Toggle { value = value };
-                fieldContainer.Add(visualElement);
+                if (fieldContainer.hierarchy.childCount == 0)
+                {
+                    fieldContainer.contentContainer.Add(visualElement);
+                }
+                else
+                {
+                    if (fieldName == null)
+                    {
+                        fieldContainer.hierarchy.Add(visualElement);
+                    }
+                    else
+                    {
+                        fieldContainer.hierarchy[0].Add(visualElement);
+                    }
+                }
+
                 visualElement.RegisterCallback<ChangeEvent<bool>>(OnChanged);
 
                 void OnChanged(ChangeEvent<bool> evt)
@@ -184,7 +235,22 @@ namespace AxeEngine.Editor.Toolkit
             {
                 var value = (string)fieldInfo.Value;
                 visualElement = new TextField { value = value };
-                fieldContainer.Add(visualElement);
+                if (fieldContainer.hierarchy.childCount == 0)
+                {
+                    fieldContainer.contentContainer.Add(visualElement);
+                }
+                else
+                {
+                    if (fieldName == null)
+                    {
+                        fieldContainer.hierarchy.Add(visualElement);
+                    }
+                    else
+                    {
+                        fieldContainer.hierarchy[0].Add(visualElement);
+                    }
+                }
+
                 visualElement.RegisterCallback<ChangeEvent<string>>(OnChanged);
 
                 void OnChanged(ChangeEvent<string> evt)
@@ -195,8 +261,25 @@ namespace AxeEngine.Editor.Toolkit
             else if (fieldType.IsEnum)
             {
                 var value = (Enum)fieldInfo.Value;
-                visualElement = new EnumField { value = value };
-                fieldContainer.Add(visualElement);
+                var enumDropdown = new EnumField { value = value };
+                enumDropdown.Init(value);
+                visualElement = enumDropdown;
+                if (fieldContainer.hierarchy.childCount == 0)
+                {
+                    fieldContainer.contentContainer.Add(visualElement);
+                }
+                else
+                {
+                    if (fieldName == null)
+                    {
+                        fieldContainer.hierarchy.Add(visualElement);
+                    }
+                    else
+                    {
+                        fieldContainer.hierarchy[0].Add(visualElement);
+                    }
+                }
+
                 visualElement.RegisterCallback<ChangeEvent<Enum>>(OnChanged);
 
                 void OnChanged(ChangeEvent<Enum> evt)
@@ -208,7 +291,22 @@ namespace AxeEngine.Editor.Toolkit
             {
                 var value = (UnityEngine.Object)fieldInfo.Value;
                 visualElement = new ObjectField { value = value };
-                fieldContainer.Add(visualElement);
+                if (fieldContainer.hierarchy.childCount == 0)
+                {
+                    fieldContainer.contentContainer.Add(visualElement);
+                }
+                else
+                {
+                    if (fieldName == null)
+                    {
+                        fieldContainer.hierarchy.Add(visualElement);
+                    }
+                    else
+                    {
+                        fieldContainer.hierarchy[0].Add(visualElement);
+                    }
+                }
+
                 visualElement.RegisterCallback<ChangeEvent<UnityEngine.Object>>(OnChanged);
                 var objectField = (ObjectField)visualElement;
                 objectField.objectType = fieldType;
@@ -216,14 +314,6 @@ namespace AxeEngine.Editor.Toolkit
 
                 void OnChanged(ChangeEvent<UnityEngine.Object> evt)
                 {
-                    if (evt.newValue != null && fieldType != evt.newValue.GetType())
-                    {
-                        var field = (ObjectField)visualElement;
-                        field.SetValueWithoutNotify(null);
-                        Debug.LogWarning("Can't set value of type " + evt.newValue.GetType().Name + " to " + fieldType.Name);
-                        return;
-                    }
-
                     SetValueToActor(component, fieldInfo, evt.newValue);
                 }
             }
@@ -231,7 +321,22 @@ namespace AxeEngine.Editor.Toolkit
             {
                 var value = (Vector2)fieldInfo.Value;
                 visualElement = new Vector2Field { value = value };
-                fieldContainer.Add(visualElement);
+                if (fieldContainer.hierarchy.childCount == 0)
+                {
+                    fieldContainer.contentContainer.Add(visualElement);
+                }
+                else
+                {
+                    if (fieldName == null)
+                    {
+                        fieldContainer.hierarchy.Add(visualElement);
+                    }
+                    else
+                    {
+                        fieldContainer.hierarchy[0].Add(visualElement);
+                    }
+                }
+
                 visualElement.RegisterCallback<ChangeEvent<Vector2>>(OnChanged);
 
                 void OnChanged(ChangeEvent<Vector2> evt)
@@ -243,7 +348,22 @@ namespace AxeEngine.Editor.Toolkit
             {
                 var value = (Vector3)fieldInfo.Value;
                 visualElement = new Vector3Field { value = value };
-                fieldContainer.Add(visualElement);
+                if (fieldContainer.hierarchy.childCount == 0)
+                {
+                    fieldContainer.contentContainer.Add(visualElement);
+                }
+                else
+                {
+                    if (fieldName == null)
+                    {
+                        fieldContainer.hierarchy.Add(visualElement);
+                    }
+                    else
+                    {
+                        fieldContainer.hierarchy[0].Add(visualElement);
+                    }
+                }
+
                 visualElement.RegisterCallback<ChangeEvent<Vector3>>(OnChanged);
 
                 void OnChanged(ChangeEvent<Vector3> evt)
@@ -255,7 +375,22 @@ namespace AxeEngine.Editor.Toolkit
             {
                 var value = (Vector4)fieldInfo.Value;
                 visualElement = new Vector4Field { value = value };
-                fieldContainer.Add(visualElement);
+                if (fieldContainer.hierarchy.childCount == 0)
+                {
+                    fieldContainer.contentContainer.Add(visualElement);
+                }
+                else
+                {
+                    if (fieldName == null)
+                    {
+                        fieldContainer.hierarchy.Add(visualElement);
+                    }
+                    else
+                    {
+                        fieldContainer.hierarchy[0].Add(visualElement);
+                    }
+                }
+
                 visualElement.RegisterCallback<ChangeEvent<Vector4>>(OnChanged);
 
                 void OnChanged(ChangeEvent<Vector4> evt)
@@ -267,7 +402,22 @@ namespace AxeEngine.Editor.Toolkit
             {
                 var value = (Color)fieldInfo.Value;
                 visualElement = new ColorField { value = value };
-                fieldContainer.Add(visualElement);
+                if (fieldContainer.hierarchy.childCount == 0)
+                {
+                    fieldContainer.contentContainer.Add(visualElement);
+                }
+                else
+                {
+                    if (fieldName == null)
+                    {
+                        fieldContainer.hierarchy.Add(visualElement);
+                    }
+                    else
+                    {
+                        fieldContainer.hierarchy[0].Add(visualElement);
+                    }
+                }
+
                 visualElement.RegisterCallback<ChangeEvent<Color>>(OnChanged);
 
                 void OnChanged(ChangeEvent<Color> evt)
@@ -279,7 +429,22 @@ namespace AxeEngine.Editor.Toolkit
             {
                 var value = (AnimationCurve)fieldInfo.Value;
                 visualElement = new CurveField { value = value };
-                fieldContainer.Add(visualElement);
+                if (fieldContainer.hierarchy.childCount == 0)
+                {
+                    fieldContainer.contentContainer.Add(visualElement);
+                }
+                else
+                {
+                    if (fieldName == null)
+                    {
+                        fieldContainer.hierarchy.Add(visualElement);
+                    }
+                    else
+                    {
+                        fieldContainer.hierarchy[0].Add(visualElement);
+                    }
+                }
+
                 visualElement.RegisterCallback<ChangeEvent<AnimationCurve>>(OnChanged);
 
                 void OnChanged(ChangeEvent<AnimationCurve> evt)
@@ -317,7 +482,22 @@ namespace AxeEngine.Editor.Toolkit
 
                 instance ??= Array.CreateInstance(elementType, 0);
                 visualElement = new Foldout { value = true };
-                fieldContainer.Add(visualElement);
+                if (fieldContainer.hierarchy.childCount == 0)
+                {
+                    fieldContainer.contentContainer.Add(visualElement);
+                }
+                else
+                {
+                    if (fieldName == null)
+                    {
+                        fieldContainer.hierarchy.Add(visualElement);
+                    }
+                    else
+                    {
+                        fieldContainer.hierarchy[0].Add(visualElement);
+                    }
+                }
+
                 var plusButton = new Button
                 {
                     text = "+",
