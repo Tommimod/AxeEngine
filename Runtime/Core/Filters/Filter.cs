@@ -4,6 +4,9 @@ namespace AxeEngine
 {
     public class Filter
     {
+        /// <summary>
+        /// Applied filter options
+        /// </summary>
         public FilterOption Options { get; private set; }
 
         private readonly World _world;
@@ -40,11 +43,31 @@ namespace AxeEngine
             }
         }
 
+        /// <summary>
+        /// Return collected actors by references
+        /// </summary>
+        /// <returns></returns>
         public HashSet<IActor> Get()
         {
             return _actors;
         }
 
+        /// <summary>
+        /// Return collected actors by values
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<IActor> GetCopy()
+        {
+            var array = new IActor[_actors.Count];
+            _actors.CopyTo(array);
+            return array;
+        }
+
+        /// <summary>
+        /// Apply FilterOption to filter. If filter already build return itself without changes
+        /// </summary>
+        /// <param name="options"></param>
+        /// <returns></returns>
         public Filter Build(ref FilterOption options)
         {
             if (_isBuild)

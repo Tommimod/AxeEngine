@@ -30,6 +30,7 @@ namespace AxeEngine
         /// <typeparam name="T">type for return</typeparam>
         /// <returns>this actor</returns>
         ref T GetProp<T>() where T : struct;
+        object GetPropObject(Type type);
         /// <summary>
         /// Create or remove property by flag. Useful for properties without fields
         /// </summary>
@@ -76,7 +77,6 @@ namespace AxeEngine
         /// </summary>
         /// <returns></returns>
         void Release();
-
 
         /// <summary>
         /// Don't use it. It's needed only for apply property from unity component or restore from binary
