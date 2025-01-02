@@ -25,6 +25,7 @@ namespace AxeEngine.Editor.Toolkit
         private List<Type> _allTypes;
         private int _selectedComponentIndex;
         private readonly Dictionary<VisualElement, Array> _elementToArray = new();
+        private readonly Dictionary<Type, VisualElement> _elementToType = new();
 
         public override VisualElement CreateInspectorGUI()
         {
@@ -44,8 +45,44 @@ namespace AxeEngine.Editor.Toolkit
             HandleComponentDropdown();
             HandleAddButton(_componentsDropdown.value);
             HandleComponentList();
-            _addButton.clicked += OnAddButtonClicked;
+            if (Application.isPlaying)
+            {
+                _editorActor.OnPropertyChanged += OnActorChanged;
+                _addButton.RemoveFromHierarchy();
+                _componentsDropdown.RemoveFromHierarchy();
+            }
+            else
+            {
+                _addButton.clicked += OnAddButtonClicked;
+            }
+
             return _myInspector;
+        }
+
+        private void OnDestroy()
+        {
+            if (!_editorActor)
+            {
+                return;
+            }
+
+            _editorActor.OnPropertyChanged -= OnActorChanged;
+        }
+
+        private void OnActorChanged(Type type)
+        {
+            if (_elementToType.Remove(type, out var element))
+            {
+                element.RemoveFromHierarchy();
+            }
+
+            var changedType = _editorActor.Properties.FirstOrDefault(x => x.GetType() == type);
+            if (changedType == null)
+            {
+                return;
+            }
+
+            HandleOneComponent(changedType);
         }
 
         private void HandleComponentDropdown()
@@ -95,15 +132,30 @@ namespace AxeEngine.Editor.Toolkit
             _componentList.hierarchy.Clear();
             foreach (var component in _editorActor.Properties)
             {
-                var componentVisualElement = new VisualElement();
-                _componentTreeAsset.CloneTree(componentVisualElement);
-                _componentList.hierarchy.Add(componentVisualElement);
+                HandleOneComponent(component);
+            }
+        }
 
-                var label = componentVisualElement.Q<Label>("ComponentType");
-                var componentName = component.ToString();
-                label.text = GetNameAfterLastDot(componentName);
+        private void HandleOneComponent(object component)
+        {
+            var componentVisualElement = new VisualElement();
+            var currentType = component.GetType();
+            _elementToType.Add(currentType, componentVisualElement);
+            _componentTreeAsset.CloneTree(componentVisualElement);
+            _componentList.hierarchy.Add(componentVisualElement);
 
-                componentVisualElement.Q<Button>("Remove").clicked += () =>
+            var label = componentVisualElement.Q<Label>("ComponentType");
+            var componentName = component.ToString();
+            label.text = GetNameAfterLastDot(componentName);
+
+            var removeButton = componentVisualElement.Q<Button>("Remove");
+            if (Application.isPlaying)
+            {
+                removeButton.SetEnabled(false);
+            }
+            else
+            {
+                removeButton.clicked += () =>
                 {
                     _editorActor.Properties.Remove(component);
                     _editorActor.Validate();
@@ -111,31 +163,34 @@ namespace AxeEngine.Editor.Toolkit
                     HandleAddButton(_componentsDropdown.value);
                     EditorUtility.SetDirty(target);
                 };
+            }
 
-                var currentType = component.GetType();
-                var fieldsInfo = currentType.GetAllFields();
-
-                foreach (var fieldInfo in fieldsInfo)
+            var fieldsInfo = currentType.GetAllFields();
+            foreach (var fieldInfo in fieldsInfo)
+            {
+                VisualElement fieldContainer = new VisualElement();
+                componentVisualElement.hierarchy[0].hierarchy[1].hierarchy.Add(fieldContainer);
+                _fieldInfoAsset.CloneTree(fieldContainer);
+                fieldContainer.style.width = Length.Percent(100);
+                var fieldName = fieldContainer.Q<Label>("FieldName");
+                if (fieldsInfo.Length == 0)
                 {
-                    VisualElement fieldContainer = new VisualElement();
-                    componentVisualElement.hierarchy[0].hierarchy[1].hierarchy.Add(fieldContainer);
-                    _fieldInfoAsset.CloneTree(fieldContainer);
-                    fieldContainer.style.width = Length.Percent(100);
-                    var fieldName = fieldContainer.Q<Label>("FieldName");
-                    if (fieldsInfo.Length == 0)
-                    {
-                        fieldName.RemoveFromHierarchy();
-                        break;
-                    }
-
-                    var customInfo = new AxeFieldInfo(fieldInfo.Name, fieldInfo.FieldType, fieldInfo.GetValue(component));
-                    CreateField(customInfo, fieldContainer, component, fieldName);
+                    fieldName.RemoveFromHierarchy();
+                    break;
                 }
+
+                var customInfo = new AxeFieldInfo(fieldInfo.Name, fieldInfo.FieldType, fieldInfo.GetValue(component));
+                CreateField(customInfo, fieldContainer, component, fieldName);
             }
         }
 
         private void SetValueToActor(object component, AxeFieldInfo fieldInfo, object value)
         {
+            if (Application.isPlaying)
+            {
+                return;
+            }
+
             var componentInstance = _editorActor.Properties.FirstOrDefault(x => x == component);
             componentInstance?.GetType().GetField(fieldInfo.Name).SetValue(componentInstance, value);
             EditorUtility.SetDirty(target);

@@ -31,6 +31,7 @@ namespace AxeEngine
 
         public bool HasProp<T>() where T : struct => _world.GetChunk<T>().Has(Id);
         public ref T GetProp<T>() where T : struct => ref _world.GetChunk<T>().Get(Id);
+        public object GetPropObject(Type type) => _world.GetChunkDynamic(type).Get(Id);
 
         public IActor SetPropertyEnabled<T>(bool isEnabled) where T : struct
         {

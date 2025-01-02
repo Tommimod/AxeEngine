@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Burst;
 using UnityEngine;
 
@@ -7,6 +9,8 @@ namespace AxeEngine.Editor
     [BurstCompile]
     public class AxeEditorActor : MonoBehaviour
     {
+        public Action<Type> OnPropertyChanged;
+
         [SerializeReference]
         public List<object> Properties = new();
 
@@ -26,6 +30,35 @@ namespace AxeEngine.Editor
                 _actor.AddProp(ref obj);
                 Properties.Add(obj);
             }
+
+            _actor.OnPropertyAdded += OnActorChanged;
+            _actor.OnPropertyRemoved += OnPropertyRemoved;
+            _actor.OnPropertyReplaced += OnActorChanged;
+        }
+
+        private void OnDestroy()
+        {
+            _actor.OnPropertyAdded -= OnActorChanged;
+            _actor.OnPropertyRemoved -= OnPropertyRemoved;
+            _actor.OnPropertyReplaced -= OnActorChanged;
+        }
+
+        private void OnActorChanged(IActor actor, Type type)
+        {
+            Properties.Add(_actor.GetPropObject(type));
+            OnPropertyChanged?.Invoke(type);
+        }
+
+        private void OnPropertyRemoved(IActor actor, Type type)
+        {
+             var obj = Properties.FirstOrDefault(x => x.GetType() == type);
+             if (obj == null)
+             {
+                 return;
+             }
+
+             Properties.Remove(obj);
+             OnPropertyChanged?.Invoke(type);
         }
 
         public void Validate()
