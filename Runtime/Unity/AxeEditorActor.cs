@@ -9,6 +9,7 @@ namespace AxeEngine.Editor
     [BurstCompile]
     public class AxeEditorActor : MonoBehaviour
     {
+        public int ActorId => _actor.Id;
         public Action<Type> OnPropertyChanged;
 
         [SerializeReference]

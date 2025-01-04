@@ -25,7 +25,7 @@ namespace AxeEngine
         {
             if (_actorToIndex.Length <= actorId) Resize(actorId * 2);
 
-            var index = _size++;
+            var index = Array.IndexOf(_properties, default);
             _properties[index] = property;
             _actorToIndex[actorId] = index;
         }
