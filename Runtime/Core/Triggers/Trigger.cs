@@ -357,6 +357,78 @@ namespace AxeEngine
             return this;
         }
 
+        public Trigger AnyAction<T>() where T : struct
+        {
+            Added<T>();
+            Replaced<T>();
+            Removed<T>();
+
+            return this;
+        }
+
+        public Trigger AnyAction<T, T1>() where T : struct
+        {
+            Added<T, T1>();
+            Replaced<T, T1>();
+            Removed<T, T1>();
+
+            return this;
+        }
+
+        public Trigger AnyAction<T, T1, T2>() where T : struct
+        {
+            Added<T, T1, T2>();
+            Replaced<T, T1, T2>();
+            Removed<T, T1, T2>();
+
+            return this;
+        }
+
+        public Trigger AnyAction<T, T1, T2, T3>() where T : struct
+        {
+            Added<T, T1, T2, T3>();
+            Replaced<T, T1, T2, T3>();
+            Removed<T, T1, T2, T3>();
+
+            return this;
+        }
+
+        public Trigger AnyAction<T, T1, T2, T3, T4>() where T : struct
+        {
+            Added<T, T1, T2, T3, T4>();
+            Replaced<T, T1, T2, T3, T4>();
+            Removed<T, T1, T2, T3, T4>();
+
+            return this;
+        }
+
+        public Trigger AnyAction<T, T1, T2, T3, T4, T5>() where T : struct
+        {
+            Added<T, T1, T2, T3, T4, T5>();
+            Replaced<T, T1, T2, T3, T4, T5>();
+            Removed<T, T1, T2, T3, T4, T5>();
+
+            return this;
+        }
+
+        public Trigger AnyAction<T, T1, T2, T3, T4, T5, T6>() where T : struct
+        {
+            Added<T, T1, T2, T3, T4, T5, T6>();
+            Replaced<T, T1, T2, T3, T4, T5, T6>();
+            Removed<T, T1, T2, T3, T4, T5, T6>();
+
+            return this;
+        }
+
+        public Trigger AnyAction<T, T1, T2, T3, T4, T5, T6, T7>() where T : struct
+        {
+            Added<T, T1, T2, T3, T4, T5, T6, T7>();
+            Replaced<T, T1, T2, T3, T4, T5, T6, T7>();
+            Removed<T, T1, T2, T3, T4, T5, T6, T7>();
+
+            return this;
+        }
+
         private void MarkTypeShouldBeAdded(Type type)
         {
             var freeIndex = Array.IndexOf(_shouldBeAddedTypes, null);

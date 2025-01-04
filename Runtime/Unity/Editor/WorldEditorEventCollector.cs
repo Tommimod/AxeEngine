@@ -30,10 +30,8 @@ namespace AxeEngine.Editor
             switch (state)
             {
                 case PlayModeStateChange.EnteredPlayMode:
-                    Initialize();
-                    break;
-                case PlayModeStateChange.ExitingPlayMode:
                     Dispose();
+                    Initialize();
                     break;
             }
         }
@@ -90,12 +88,22 @@ namespace AxeEngine.Editor
 
         private static void OnPropertyAdded(IActor actor, Type type)
         {
+            var id = actor.Id;
             var gameObject = TryGetGameObject(actor);
-            var gameObjectName = gameObject != null ? gameObject.name : string.Empty;
+            var gameObjectName = gameObject != null ? $"{gameObject.name}({id})" : id.ToString();
             var fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             foreach (var field in fields)
             {
-                var value = field.GetValue(type);
+                object value = null;
+                try
+                {
+                    value = field.GetValue(type);
+                }
+                catch
+                {
+                    value = "Cannot get value";
+                }
+
                 _stringBuilder.AppendFormat("{0} = {1}\n", field.Name, value);
             }
 
@@ -106,12 +114,22 @@ namespace AxeEngine.Editor
 
         private static void OnPropertyReplaced(IActor actor, Type type)
         {
+            var id = actor.Id;
             var gameObject = TryGetGameObject(actor);
-            var gameObjectName = gameObject != null ? gameObject.name : string.Empty;
+            var gameObjectName = gameObject != null ? $"{gameObject.name}({id})" : id.ToString();
             var fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             foreach (var field in fields)
             {
-                var value = field.GetValue(type);
+                object value = null;
+                try
+                {
+                    value = field.GetValue(type);
+                }
+                catch
+                {
+                    value = "Cannot get value";
+                }
+
                 _stringBuilder.AppendFormat("{0} = {1}\n", field.Name, value);
             }
 
@@ -122,12 +140,22 @@ namespace AxeEngine.Editor
 
         private static void OnPropertyRemoved(IActor actor, Type type)
         {
+            var id = actor.Id;
             var gameObject = TryGetGameObject(actor);
-            var gameObjectName = gameObject != null ? gameObject.name : string.Empty;
+            var gameObjectName = gameObject != null ? $"{gameObject.name}({id})" : id.ToString();
             var fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             foreach (var field in fields)
             {
-                var value = field.GetValue(type);
+                object value = null;
+                try
+                {
+                    value = field.GetValue(type);
+                }
+                catch
+                {
+                    value = "Cannot get value";
+                }
+
                 _stringBuilder.AppendFormat("{0} = {1}\n", field.Name, value);
             }
 

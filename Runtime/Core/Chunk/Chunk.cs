@@ -11,7 +11,6 @@ namespace AxeEngine
         private readonly T[] _defaultProperties = new T[1];
         private T[] _properties;
         private int[] _actorToIndex;
-        private int _size;
 
         public Chunk()
         {
@@ -25,18 +24,18 @@ namespace AxeEngine
         {
             if (_actorToIndex.Length <= actorId) Resize(actorId * 2);
 
-            var index = _size++;
+            var index = Array.IndexOf(_actorToIndex, -1);
             _properties[index] = property;
-            _actorToIndex[actorId] = index;
+            _actorToIndex[index] = actorId;
         }
 
         public void Remove(int actorId)
         {
-            var index = _actorToIndex[actorId];
+            var index = Array.IndexOf(_actorToIndex, actorId);
             if (index == -1) return;
 
             _properties[index] = default;
-            _actorToIndex[actorId] = -1;
+            _actorToIndex[index] = -1;
         }
 
         public void Add(int actorId, object property)
@@ -58,7 +57,7 @@ namespace AxeEngine
 
         public ref T Get(int actorId)
         {
-            var index = _actorToIndex[actorId];
+            var index = Array.IndexOf(_actorToIndex, actorId);
             if (index == -1)
             {
                 Debug.LogError(new NullReferenceException($"Property {typeof(T).Name} not found for entity {actorId}"));
@@ -68,13 +67,14 @@ namespace AxeEngine
             return ref _properties[index];
         }
 
-        public bool Has(int actorId) => _actorToIndex[actorId] != -1;
+        public bool Has(int actorId) => Array.IndexOf(_actorToIndex, actorId) != -1;
 
         private void Resize(int newSize)
         {
+            var size = _properties.Length;
             Array.Resize(ref _properties, newSize);
             Array.Resize(ref _actorToIndex, newSize);
-            Array.Fill(_actorToIndex, -1, _size, newSize - _size);
+            Array.Fill(_actorToIndex, -1, size, newSize - size);
         }
     }
 }

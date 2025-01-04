@@ -9,6 +9,7 @@ namespace AxeEngine.Editor
     [BurstCompile]
     public class AxeEditorActor : MonoBehaviour
     {
+        public int ActorId => _actor.Id;
         public Action<Type> OnPropertyChanged;
 
         [SerializeReference]
@@ -24,16 +25,15 @@ namespace AxeEngine.Editor
                 _actor.RestorePropFromObject(obj);
             }
 
+            _actor.OnPropertyAdded += OnActorChanged;
+            _actor.OnPropertyRemoved += OnPropertyRemoved;
+            _actor.OnPropertyReplaced += OnActorChanged;
+
             if (!_actor.HasProp<UnityObject>())
             {
                 var obj = new UnityObject { Value = gameObject };
                 _actor.AddProp(ref obj);
-                Properties.Add(obj);
             }
-
-            _actor.OnPropertyAdded += OnActorChanged;
-            _actor.OnPropertyRemoved += OnPropertyRemoved;
-            _actor.OnPropertyReplaced += OnActorChanged;
         }
 
         private void OnDestroy()
@@ -51,14 +51,14 @@ namespace AxeEngine.Editor
 
         private void OnPropertyRemoved(IActor actor, Type type)
         {
-             var obj = Properties.FirstOrDefault(x => x.GetType() == type);
-             if (obj == null)
-             {
-                 return;
-             }
+            var obj = Properties.FirstOrDefault(x => x.GetType() == type);
+            if (obj == null)
+            {
+                return;
+            }
 
-             Properties.Remove(obj);
-             OnPropertyChanged?.Invoke(type);
+            Properties.Remove(obj);
+            OnPropertyChanged?.Invoke(type);
         }
 
         public void Validate()

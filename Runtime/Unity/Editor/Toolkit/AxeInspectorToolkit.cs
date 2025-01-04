@@ -129,6 +129,8 @@ namespace AxeEngine.Editor.Toolkit
 
         private void HandleComponentList()
         {
+            _elementToType.Clear();
+            _elementToArray.Clear();
             _componentList.hierarchy.Clear();
             foreach (var component in _editorActor.Properties)
             {
