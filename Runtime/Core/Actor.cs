@@ -10,10 +10,23 @@ namespace AxeEngine
         public bool IsAlive { get; private set; }
         public int Id { get; }
         public Action<IActor, Type> OnPropertyAdded { get; set; }
+        public Action<IActor, object, int> OnTemporaryPropertyAdded { get; set; }
         public Action<IActor, Type> OnPropertyReplaced { get; set; }
         public Action<IActor, Type> OnPropertyRemoved { get; set; }
 
         IReadOnlyList<Type> IActor.GetAllProperties() => _properties;
+
+        void IActor.RemovePropInternal(object property)
+        {
+            var type = property.GetType();
+            var chunk = _world.GetChunkDynamic(type);
+            if (chunk.Has(Id))
+            {
+                chunk.Remove(Id);
+                _properties.Remove(type);
+                OnPropertyRemoved?.Invoke(this, type);
+            }
+        }
 
         internal readonly World _world;
         private readonly List<Type> _properties = new();
@@ -68,6 +81,27 @@ namespace AxeEngine
         public IActor AddProp<T>(T property = default) where T : struct
         {
             return AddProp(ref property);
+        }
+
+        public IActor AddTemporaryProp<T>(int lifecyclesCount = 1, T property = default) where T : struct
+        {
+            return AddTemporaryProp(ref property, lifecyclesCount);
+        }
+
+        public IActor AddTemporaryProp<T>(ref T property, int lifecyclesCount = 1) where T : struct
+        {
+            if (lifecyclesCount < 1)
+            {
+                lifecyclesCount = 1;
+            }
+
+            if (HasProp<T>())
+            {
+                return this;
+            }
+
+            OnTemporaryPropertyAdded.Invoke(this, property, lifecyclesCount);
+            return this;
         }
 
         public IActor RestorePropFromObject(object property)

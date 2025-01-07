@@ -187,6 +187,21 @@ namespace AxeEngine.Tests
             Assert.IsFalse(actor.HasProp<TestProperty>());
         }
 
+        [Test]
+        public void CreateActor_AddTempProperty_True()
+        {
+            var actor = _world.CreateActor();
+            var prop = new TestIntProperty { Value = 1 };
+            actor.AddTemporaryProp(ref prop);
+            Assert.IsFalse(actor.HasProp<TestIntProperty>());
+
+            _world.AbilityManager.CycleFinished.Invoke();
+            Assert.IsTrue(actor.HasProp<TestIntProperty>());
+
+            _world.AbilityManager.CycleFinished.Invoke();
+            Assert.IsFalse(actor.HasProp<TestIntProperty>());
+        }
+
         private struct TestProperty
         {
         }

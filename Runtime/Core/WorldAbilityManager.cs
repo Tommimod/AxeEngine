@@ -7,6 +7,8 @@ namespace AxeEngine
     [BurstCompile]
     public class WorldAbilityManager : IDisposable
     {
+        public Action CycleFinished { get; set; }
+
         private readonly World _world;
         private readonly List<IAbility> _abilities = new();
         private readonly List<IInitializeAbility> _initializeAbilities = new();
@@ -182,7 +184,7 @@ namespace AxeEngine
                 ability.TearDown(_world);
             }
 
-            _world.ClearTriggers();
+            CycleFinished?.Invoke();
         }
 
         public void Dispose()

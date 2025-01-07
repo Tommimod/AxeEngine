@@ -14,12 +14,14 @@ namespace AxeEngine
         private Type[] _withTypes;
         private Type[] _withAnyTypes;
         private Type[] _withoutTypes;
+        private HashSet<Type> _copyBuffer;
 
         public static FilterOption Empty => new FilterOption().Initialize();
 
         //Use if you not use Empty, or for reset filterOption
         public FilterOption Initialize()
         {
+            _copyBuffer = new HashSet<Type>();
             _withTypes = new Type[7];
             _withAnyTypes = new Type[7];
             _withoutTypes = new Type[7];
@@ -29,19 +31,49 @@ namespace AxeEngine
         public bool IsEquals(FilterOption other)
         {
             var otherWithTypes = other._withTypes;
-            var copyWithTypes = new HashSet<Type>(_withTypes);
-            copyWithTypes.ExceptWith(otherWithTypes);
-            if (_withTypes.Length != otherWithTypes.Length || copyWithTypes.Count > 0) return false;
+            _copyBuffer.Clear();
+            foreach (var type in _withTypes)
+            {
+                _copyBuffer.Add(type);
+            }
+
+            foreach (var type in otherWithTypes)
+            {
+                _copyBuffer.Add(type);
+            }
+
+            _copyBuffer.ExceptWith(_withTypes);
+            if (_withTypes.Length != otherWithTypes.Length || _copyBuffer.Count > 0) return false;
 
             var otherWithAnyTypes = other._withAnyTypes;
-            var copyWithAnyTypes = new HashSet<Type>(_withAnyTypes);
-            copyWithAnyTypes.ExceptWith(otherWithAnyTypes);
-            if (_withAnyTypes.Length != otherWithAnyTypes.Length || copyWithAnyTypes.Count > 0) return false;
+            _copyBuffer.Clear();
+            foreach (var type in _withAnyTypes)
+            {
+                _copyBuffer.Add(type);
+            }
+
+            foreach (var type in otherWithAnyTypes)
+            {
+                _copyBuffer.Add(type);
+            }
+
+            _copyBuffer.ExceptWith(_withAnyTypes);
+            if (_withAnyTypes.Length != otherWithAnyTypes.Length || _copyBuffer.Count > 0) return false;
 
             var otherWithoutTypes = other._withoutTypes;
-            var copyWithoutTypes = new HashSet<Type>(_withoutTypes);
-            copyWithoutTypes.ExceptWith(otherWithoutTypes);
-            if (_withoutTypes.Length != otherWithoutTypes.Length || copyWithoutTypes.Count > 0) return false;
+            _copyBuffer.Clear();
+            foreach (var type in _withoutTypes)
+            {
+                _copyBuffer.Add(type);
+            }
+
+            foreach (var type in otherWithoutTypes)
+            {
+                _copyBuffer.Add(type);
+            }
+
+            _copyBuffer.ExceptWith(_withoutTypes);
+            if (_withoutTypes.Length != otherWithoutTypes.Length || _copyBuffer.Count > 0) return false;
 
             return true;
         }
