@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace AxeEngine
@@ -11,6 +12,7 @@ namespace AxeEngine
 
         private readonly World _world;
         private readonly HashSet<IActor> _actors = new();
+        private IActor[] _bufferArray = Array.Empty<IActor>();
 
         private bool _isBuild;
 
@@ -56,11 +58,15 @@ namespace AxeEngine
         /// Return collected actors by values
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<IActor> GetCopy()
+        public IActor[] GetCopy()
         {
-            var array = new IActor[_actors.Count];
-            _actors.CopyTo(array);
-            return array;
+            if (_bufferArray.Length != _actors.Count)
+            {
+                Array.Resize(ref _bufferArray, _actors.Count);
+            }
+
+            _actors.CopyTo(_bufferArray);
+            return _bufferArray;
         }
 
         /// <summary>

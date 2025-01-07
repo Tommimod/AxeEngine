@@ -28,12 +28,15 @@ namespace AxeEngine
         private readonly Dictionary<Type, object> _componentStorage = new();
         private readonly WorldAbilityManager _abilityManager;
         private ObjectPool<IActor> _objectPool;
+        private readonly List<TemporaryPropertyLifeData> _temporaryPropertys = new();
+        private TemporaryPropertyLifeData[] _temporaryPropertysBuffer = new TemporaryPropertyLifeData[64];
         private int _lastId = 1;
 
         public World()
         {
             _objectPool = new ObjectPool<IActor>(OnCreateFromPull, OnGetFromPull, OnReleaseToPull);
             _abilityManager = new WorldAbilityManager(this);
+            _abilityManager.CycleFinished += AbilitiesCycleFinished;
         }
 
         public HashSet<IActor> GetAllActors() => _actors;
@@ -127,6 +130,41 @@ namespace AxeEngine
             return (IChunk)storage;
         }
 
+        private void AbilitiesCycleFinished()
+        {
+            ClearTriggers();
+            if (_temporaryPropertys.Count == 0)
+            {
+                return;
+            }
+
+            if (_temporaryPropertysBuffer.Length < _temporaryPropertys.Count)
+            {
+                Array.Resize(ref _temporaryPropertysBuffer, _temporaryPropertys.Count);
+            }
+
+            var count = _temporaryPropertys.Count;
+            _temporaryPropertys.CopyTo(_temporaryPropertysBuffer);
+            for (var i = 0; i < count; i++)
+            {
+                if (_temporaryPropertysBuffer[i].Actor == null)
+                {
+                    continue;
+                }
+
+                _temporaryPropertysBuffer[i].Decrement();
+                _temporaryPropertys[i] = _temporaryPropertysBuffer[i];
+                if (_temporaryPropertysBuffer[i].LifecycleCount > 0)
+                {
+                    continue;
+                }
+
+                _temporaryPropertys.Remove(_temporaryPropertysBuffer[i]);
+                _temporaryPropertysBuffer[i].Actor.RemovePropInternal(_temporaryPropertysBuffer[i].PropertyObject);
+                _temporaryPropertysBuffer[i] = default;
+            }
+        }
+
         private IActor OnCreateFromPull()
         {
             if (_lastId.Equals(int.MaxValue))
@@ -137,6 +175,11 @@ namespace AxeEngine
             return new Actor(this, _lastId++);
         }
 
+        private void OnActorAddTemporaryProperty(IActor actor, object actorProperty, int lifecyclesCount)
+        {
+            _temporaryPropertys.Add(new TemporaryPropertyLifeData(actor, actorProperty, lifecyclesCount));
+        }
+
         private void OnGetFromPull(IActor actor)
         {
             actor.Restore();
@@ -144,6 +187,7 @@ namespace AxeEngine
             actor.OnPropertyAdded += OnActorAddProperty;
             actor.OnPropertyReplaced += OnActorReplaceProperty;
             actor.OnPropertyRemoved += OnActorRemoveProperty;
+            actor.OnTemporaryPropertyAdded += OnActorAddTemporaryProperty;
 
             OnActorCreated?.Invoke(actor);
         }
@@ -160,6 +204,7 @@ namespace AxeEngine
             actor.OnPropertyAdded -= OnActorAddProperty;
             actor.OnPropertyReplaced -= OnActorReplaceProperty;
             actor.OnPropertyRemoved -= OnActorRemoveProperty;
+            actor.OnTemporaryPropertyAdded -= OnActorAddTemporaryProperty;
 
             OnActorDestroyed?.Invoke(actor);
         }

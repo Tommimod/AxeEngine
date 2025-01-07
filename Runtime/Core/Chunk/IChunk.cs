@@ -4,5 +4,7 @@ namespace AxeEngine
     {
         void Add(int actorId, object property);
         object Get(int actorId);
+        bool Has(int actorId);
+        void Remove(int actorId);
     }
 }
