@@ -142,7 +142,11 @@ namespace AxeEngine.Editor.Toolkit
         {
             var componentVisualElement = new VisualElement();
             var currentType = component.GetType();
-            _elementToType.Add(currentType, componentVisualElement);
+            if (!_elementToType.TryAdd(currentType, componentVisualElement))
+            {
+                return;
+            }
+
             _componentTreeAsset.CloneTree(componentVisualElement);
             _componentList.hierarchy.Add(componentVisualElement);
 

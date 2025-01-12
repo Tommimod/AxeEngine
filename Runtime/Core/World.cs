@@ -145,6 +145,7 @@ namespace AxeEngine
 
             var count = _temporaryPropertys.Count;
             _temporaryPropertys.CopyTo(_temporaryPropertysBuffer);
+            var offset = 0;
             for (var i = 0; i < count; i++)
             {
                 if (_temporaryPropertysBuffer[i].Actor == null)
@@ -153,12 +154,13 @@ namespace AxeEngine
                 }
 
                 _temporaryPropertysBuffer[i].Decrement();
-                _temporaryPropertys[i] = _temporaryPropertysBuffer[i];
+                _temporaryPropertys[i - offset] = _temporaryPropertysBuffer[i];
                 if (_temporaryPropertysBuffer[i].LifecycleCount > 0)
                 {
                     continue;
                 }
 
+                offset++;
                 _temporaryPropertys.Remove(_temporaryPropertysBuffer[i]);
                 _temporaryPropertysBuffer[i].Actor.RemovePropInternal(_temporaryPropertysBuffer[i].PropertyObject);
                 _temporaryPropertysBuffer[i] = default;
