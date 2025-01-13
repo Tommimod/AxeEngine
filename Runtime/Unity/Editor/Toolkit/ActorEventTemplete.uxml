@@ -3,7 +3,7 @@
         <ui:Label tabindex="-1" text="0" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Index" view-data-key="Index" style="width: 55px;" />
         <ui:Label tabindex="-1" text="Added" parse-escape-sequences="true" display-tooltip-when-elided="true" name="EventType" view-data-key="EventType" style="width: 55px;" />
         <ui:Label tabindex="-1" text="Vector" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ComponentType" view-data-key="EntityType" style="width: 100px;" />
-        <ui:Label tabindex="-1" text="1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ComponentValue" view-data-key="ComponentValue" style="width: 150px; font-size: 10px; white-space: nowrap; text-overflow: clip;" />
+        <ui:Label tabindex="-1" text="1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ComponentValue" view-data-key="ComponentValue" style="width: 150px; font-size: 10px; white-space: nowrap; text-overflow: ellipsis; -unity-text-align: upper-left; max-width: initial;" />
         <ui:Label tabindex="-1" text="Potato_1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="GOName" view-data-key="GOName" style="width: 100px;" />
         <ui:Label tabindex="-1" text="19:33:03" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Time" view-data-key="Time" style="width: 53px;" />
     </ui:VisualElement>

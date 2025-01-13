@@ -91,13 +91,14 @@ namespace AxeEngine.Editor
             var id = actor.Id;
             var gameObject = TryGetGameObject(actor);
             var gameObjectName = gameObject != null ? $"{gameObject.name}({id})" : id.ToString();
+            var prop = actor.GetPropObject(type);
             var fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             foreach (var field in fields)
             {
                 object value = null;
                 try
                 {
-                    value = field.GetValue(type);
+                    value = field.GetValue(prop);
                 }
                 catch
                 {
@@ -117,13 +118,14 @@ namespace AxeEngine.Editor
             var id = actor.Id;
             var gameObject = TryGetGameObject(actor);
             var gameObjectName = gameObject != null ? $"{gameObject.name}({id})" : id.ToString();
+            var prop = actor.GetPropObject(type);
             var fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             foreach (var field in fields)
             {
                 object value = null;
                 try
                 {
-                    value = field.GetValue(type);
+                    value = field.GetValue(prop);
                 }
                 catch
                 {
@@ -143,22 +145,6 @@ namespace AxeEngine.Editor
             var id = actor.Id;
             var gameObject = TryGetGameObject(actor);
             var gameObjectName = gameObject != null ? $"{gameObject.name}({id})" : id.ToString();
-            var fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            foreach (var field in fields)
-            {
-                object value = null;
-                try
-                {
-                    value = field.GetValue(type);
-                }
-                catch
-                {
-                    value = "Cannot get value";
-                }
-
-                _stringBuilder.AppendFormat("{0} = {1}\n", field.Name, value);
-            }
-
             OnActorEvent?.Invoke(new ActorEvent(ActorEvent.Type.Removed, actor.Id, GetNameAfterLastDot(type.Name), _stringBuilder.ToString(), gameObjectName,
                 DateTime.Now, Environment.StackTrace));
             _stringBuilder.Clear();

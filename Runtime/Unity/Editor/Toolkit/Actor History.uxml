@@ -11,7 +11,7 @@
             <ui:Label tabindex="-1" text="Type" parse-escape-sequences="true" display-tooltip-when-elided="true" style="width: 55px;" />
             <ui:Label tabindex="-1" text="Component" parse-escape-sequences="true" display-tooltip-when-elided="true" style="width: 100px;" />
             <ui:Label tabindex="-1" text="Value" parse-escape-sequences="true" display-tooltip-when-elided="true" style="width: 153px;" />
-            <ui:Label tabindex="-1" text="Game Object" parse-escape-sequences="true" display-tooltip-when-elided="true" style="width: 100px;" />
+            <ui:Label tabindex="-1" text="Actor" parse-escape-sequences="true" display-tooltip-when-elided="true" style="width: 100px;" />
             <ui:Label tabindex="-1" text="Time" parse-escape-sequences="true" display-tooltip-when-elided="true" style="width: 57px;" />
         </ui:VisualElement>
     </ui:VisualElement>
