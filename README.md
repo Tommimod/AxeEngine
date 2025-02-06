@@ -1,19 +1,34 @@
-# AxeEngine
+# Axe Engine
 AxeEngine - modern ECS-framework for Unity.  
 Not ECS, but APA. **Actor-Property-Ability**
 
-# Installation
-1. Download source code
-2. Double click by AxeEnginePackage.unitypackage  
-*Download in package manager from git URL is not supported, because package can't see Assembly-Charp, which is required for reflections*
-
 # Features
-- support any structs as property
+- support any structs as properties
 - no codegen
 - integration with Unity (setup property in inspector, actors history)
+- easy API
 
+# Installation
+1. Download source code
+2. Double click by AxeEnginePackage.unitypackage
+3. In player settings add keyword **AXE_ENGINE_ENABLE_STATIC**. This will create static world, which required for custom inspector and tools. Do not enable this if you don't want to have static in project
+
+*Download via package manager from git URL is not supported, because package can't see Assembly-Charp, which is required for reflections*
+
+# Unity Integration
+1. On game object add AxeEditorActor component
+2. for display properties in inspector add [AxeProperty] attribute. Also add [Serializable] attribute if some fields not visible
+
+![image](https://github.com/user-attachments/assets/b36a951a-8557-4e38-b9db-00c76b8164eb)
+
+
+# Actors History
+Open Window -> Actor History
+Use filters to find needed event. Click on event to get details in console.
+
+![image](https://github.com/user-attachments/assets/2c3868da-d4c8-4e72-a90f-7dad6b4ac8f1)
 # Examples
-## Base api
+## Simple example
 ```
     public struct ExampleFloatProperty
     {
@@ -46,7 +61,7 @@ Not ECS, but APA. **Actor-Property-Ability**
         world.DestroyActor(actorByLink); //actor will return to pool
     }
 ```
-## Advanced api
+## Advanced examples
 ### Working with big structs
 ```
   public struct ExampleBigProperty //some big struct
@@ -115,18 +130,6 @@ Not ECS, but APA. **Actor-Property-Ability**
         world.DestroyActor(actorByLink); //destroy actor for example
     }
 ```
-# Unity Integration
-1. On game object add AxeEditorActor component
-2. for display properties in inspector add [AxeProperty] attribute. Also add [Serializable] attribute if some fields not visible
-
-![image](https://github.com/user-attachments/assets/b36a951a-8557-4e38-b9db-00c76b8164eb)
-
-
-# Actors History
-Open Window -> Actor History
-Use filters to find needed event. Click on event to get details in console.
-
-![image](https://github.com/user-attachments/assets/2c3868da-d4c8-4e72-a90f-7dad6b4ac8f1)
 # Abilities
 ### Initialize ability
 ```
@@ -262,3 +265,58 @@ Use filters to find needed event. Click on event to get details in console.
         }
     }
 ```
+### Event-property
+```
+    //some struct
+    public struct ExampleEventProperty
+    {
+    }
+```
+In case if you need to send some event or request to actor, you can create temporary property
+```
+    public void Initialize()
+    {
+        var world = WorldBridge.Shared;
+        var actor = world.CreateActor();
+        actor.AddTemporaryProp<ExampleEventProperty>(); //use AddTemporaryProp method for create temporary property.
+        //Property will be added to the actor only on the next cycle, for cover all Abilities
+        //It will be removed automatically after one game cycle (after WorldBridge.Shared.AbilityManager.PerformTearDown())
+        //or
+        actor.AddTemporaryProp<ExampleEventProperty>(3); //you can override cycles amount for temporary property. Default value is 1
+        //Important! Do not remove temporary property from actor manually
+    }
+
+    public void Update()
+    {
+        //cycle 1 - in previous cycle we added temporary property with cycles = 1
+        var world = WorldBridge.Shared;
+        var actors = world.GetFilter(ref FilterOption.Empty.With<ExampleEventProperty>()).Get();
+        //actors.Count = 1
+
+        //cycle 2
+        var world = WorldBridge.Shared;
+        var actors = world.GetFilter(ref FilterOption.Empty.With<ExampleEventProperty>()).Get();
+        //actors.Count = 0
+    }
+```
+### Bool-property
+Sometimes you will have cases where you will want to enable or disable a property with true/false. This is an example of how to do it
+```
+    public struct ExampleProperty
+    {
+        //should be without fields
+        //supporting with fields will be in future
+    }
+
+...
+    public void Update()
+    {
+        var world = WorldBridge.Shared;
+        var actor = ...GetSomeActor();
+        actor.SetPropertyEnabled<ExampleProperty>(Input.GetKeyDown(KeyCode.Space));
+    }
+```
+# Shall we go?
+If you still have questions or something doesn't work, feel free to ask questions in the Issues tab. And also write to me by e-mail, for any questions -> tommimod@gmail.com.
+
+*Good luck!*

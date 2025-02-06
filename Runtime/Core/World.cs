@@ -5,11 +5,13 @@ using UnityEngine.Pool;
 
 namespace AxeEngine
 {
+#if AXE_ENGINE_ENABLE_STATIC
     public static class WorldBridge
     {
         public static World Shared => _world ??= new World();
         private static World _world;
     }
+#endif
 
     [BurstCompile]
     public class World : IDisposable

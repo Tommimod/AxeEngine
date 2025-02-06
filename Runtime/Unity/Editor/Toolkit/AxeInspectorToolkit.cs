@@ -1,3 +1,4 @@
+#if AXE_ENGINE_ENABLE_STATIC
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -783,3 +784,4 @@ namespace AxeEngine.Editor.Toolkit
         }
     }
 }
+#endif

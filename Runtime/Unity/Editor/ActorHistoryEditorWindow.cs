@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+#if UNITY_EDITOR && AXE_ENGINE_ENABLE_STATIC
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
