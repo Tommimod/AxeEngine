@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Unity.Burst;
 using Unity.IL2CPP.CompilerServices;
 
 namespace AxeEngine
 {
-    [BurstCompile]
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
     public class Trigger
@@ -47,9 +45,8 @@ namespace AxeEngine
             {
                 case TriggerAction.Added:
                 {
-                    for (var i = 0; i < _shouldBeAddedTypes.Length; i++)
+                    foreach (var shouldBeAddedType in _shouldBeAddedTypes)
                     {
-                        var shouldBeAddedType = _shouldBeAddedTypes[i];
                         if (shouldBeAddedType != type)
                         {
                             continue;
@@ -63,9 +60,8 @@ namespace AxeEngine
                 }
                 case TriggerAction.Replaced:
                 {
-                    for (var i = 0; i < _shouldBeReplacedTypes.Length; i++)
+                    foreach (var shouldBeReplacedType in _shouldBeReplacedTypes)
                     {
-                        var shouldBeReplacedType = _shouldBeReplacedTypes[i];
                         if (shouldBeReplacedType != type)
                         {
                             continue;
@@ -79,9 +75,8 @@ namespace AxeEngine
                 }
                 case TriggerAction.Removed:
                 {
-                    for (var i = 0; i < _shouldBeRemovedTypes.Length; i++)
+                    foreach (var shouldBeRemovedType in _shouldBeRemovedTypes)
                     {
-                        var shouldBeRemovedType = _shouldBeRemovedTypes[i];
                         if (shouldBeRemovedType != type)
                         {
                             continue;

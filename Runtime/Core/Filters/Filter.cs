@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using Unity.IL2CPP.CompilerServices;
 
 namespace AxeEngine
 {
+    [Il2CppSetOption(Option.NullChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
     public class Filter
     {
         /// <summary>
@@ -74,7 +77,7 @@ namespace AxeEngine
         /// </summary>
         /// <param name="options"></param>
         /// <returns></returns>
-        public Filter Build(ref FilterOption options)
+        internal Filter Build(FilterOption options)
         {
             if (_isBuild)
             {
