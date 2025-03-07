@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Unity.Burst;
 using UnityEngine.Pool;
 
 namespace AxeEngine
@@ -10,10 +9,11 @@ namespace AxeEngine
     {
         public static World Shared => _world ??= new World();
         private static World _world;
+
+        public static void Reset() => _world = new World();
     }
 #endif
 
-    [BurstCompile]
     public class World : IDisposable
     {
         /// <summary>
@@ -60,7 +60,7 @@ namespace AxeEngine
 
             var newFilter = new Filter(this);
             _filters.Add(newFilter);
-            return newFilter.Build(ref filterOption);
+            return newFilter.Build(filterOption);
         }
 
         /// <summary>
@@ -100,14 +100,6 @@ namespace AxeEngine
         }
 
         internal void AddTrigger(Trigger trigger) => _triggers.Add(trigger);
-
-        internal void ClearTriggers()
-        {
-            foreach (var trigger in _triggers)
-            {
-                trigger.Clear();
-            }
-        }
 
         internal Chunk<T> GetChunk<T>() where T : struct
         {
@@ -166,6 +158,14 @@ namespace AxeEngine
                 _temporaryPropertys.Remove(_temporaryPropertysBuffer[i]);
                 _temporaryPropertysBuffer[i].Actor.RemovePropInternal(_temporaryPropertysBuffer[i].PropertyObject);
                 _temporaryPropertysBuffer[i] = default;
+            }
+        }
+
+        private void ClearTriggers()
+        {
+            foreach (var trigger in _triggers)
+            {
+                trigger.Clear();
             }
         }
 

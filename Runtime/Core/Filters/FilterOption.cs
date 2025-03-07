@@ -8,24 +8,34 @@ namespace AxeEngine
     [BurstCompile]
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
-    public struct FilterOption
+    public readonly struct FilterOption
     {
-        private readonly string _name;
-        private Type[] _withTypes;
-        private Type[] _withAnyTypes;
-        private Type[] _withoutTypes;
-        private HashSet<Type> _copyBuffer;
+        private readonly Type[] _withTypes;
+        private readonly Type[] _withAnyTypes;
+        private readonly Type[] _withoutTypes;
+        private readonly HashSet<Type> _copyBuffer;
 
-        public static FilterOption Empty => new FilterOption().Initialize();
+        /// <summary>
+        /// Default FilterOption with capacity 7
+        /// </summary>
+        public static FilterOption Empty => new(7);
 
-        //Use if you not use Empty, or for reset filterOption
-        public FilterOption Initialize()
+        /// <summary>
+        /// Use for create new FilterOption with custom capacity
+        /// </summary>
+        /// <param name="capacity">capacity for types</param>
+        public FilterOption(int capacity)
         {
             _copyBuffer = new HashSet<Type>();
-            _withTypes = new Type[7];
-            _withAnyTypes = new Type[7];
-            _withoutTypes = new Type[7];
-            return this;
+            _withTypes = new Type[capacity];
+            _withAnyTypes = new Type[capacity];
+            _withoutTypes = new Type[capacity];
+        }
+
+        private int GetCount(Type[] array)
+        {
+            var freeIndex = Array.IndexOf(array, null);
+            return freeIndex == -1 ? array.Length : freeIndex;
         }
 
         public bool IsEquals(FilterOption other)
@@ -42,7 +52,8 @@ namespace AxeEngine
                 _copyBuffer.Add(type);
             }
 
-            _copyBuffer.ExceptWith(_withTypes);
+            var lessArray = GetCount(_withTypes) > GetCount(otherWithTypes) ? otherWithTypes : _withTypes;
+            _copyBuffer.ExceptWith(lessArray);
             if (_withTypes.Length != otherWithTypes.Length || _copyBuffer.Count > 0) return false;
 
             var otherWithAnyTypes = other._withAnyTypes;
@@ -57,7 +68,8 @@ namespace AxeEngine
                 _copyBuffer.Add(type);
             }
 
-            _copyBuffer.ExceptWith(_withAnyTypes);
+            lessArray = GetCount(_withAnyTypes) > GetCount(otherWithAnyTypes) ? otherWithAnyTypes : _withAnyTypes;
+            _copyBuffer.ExceptWith(lessArray);
             if (_withAnyTypes.Length != otherWithAnyTypes.Length || _copyBuffer.Count > 0) return false;
 
             var otherWithoutTypes = other._withoutTypes;
@@ -72,7 +84,8 @@ namespace AxeEngine
                 _copyBuffer.Add(type);
             }
 
-            _copyBuffer.ExceptWith(_withoutTypes);
+            lessArray = GetCount(_withoutTypes) > GetCount(otherWithoutTypes) ? otherWithoutTypes : _withoutTypes;
+            _copyBuffer.ExceptWith(lessArray);
             if (_withoutTypes.Length != otherWithoutTypes.Length || _copyBuffer.Count > 0) return false;
 
             return true;
@@ -379,8 +392,7 @@ namespace AxeEngine
             var freeIndex = Array.IndexOf(_withTypes, null);
             if (freeIndex == -1)
             {
-                Array.Resize(ref _withTypes, _withTypes.Length * 2);
-                freeIndex = Array.IndexOf(_withTypes, null);
+                throw new Exception("Too many types. Create new FilterOption with more capacity.");
             }
 
             _withTypes[freeIndex] = type;
@@ -391,8 +403,7 @@ namespace AxeEngine
             var freeIndex = Array.IndexOf(_withAnyTypes, null);
             if (freeIndex == -1)
             {
-                Array.Resize(ref _withAnyTypes, _withAnyTypes.Length * 2);
-                freeIndex = Array.IndexOf(_withAnyTypes, null);
+                throw new Exception("Too many types. Create new FilterOption with more capacity.");
             }
 
             _withAnyTypes[freeIndex] = type;
@@ -403,8 +414,7 @@ namespace AxeEngine
             var freeIndex = Array.IndexOf(_withoutTypes, null);
             if (freeIndex == -1)
             {
-                Array.Resize(ref _withoutTypes, _withoutTypes.Length * 2);
-                freeIndex = Array.IndexOf(_withoutTypes, null);
+                throw new Exception("Too many types. Create new FilterOption with more capacity.");
             }
 
             _withoutTypes[freeIndex] = type;

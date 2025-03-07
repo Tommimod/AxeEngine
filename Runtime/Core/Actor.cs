@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
-using Unity.Burst;
+using Unity.IL2CPP.CompilerServices;
 
 namespace AxeEngine
 {
-    [BurstCompile]
+    [Il2CppSetOption(Option.NullChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
     public class Actor : IActor
     {
         public bool IsAlive { get; private set; }

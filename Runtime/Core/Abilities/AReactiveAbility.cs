@@ -1,9 +1,7 @@
 using System.Collections.Generic;
-using Unity.Burst;
 
 namespace AxeEngine
 {
-    [BurstCompile]
     public abstract class AReactiveAbility : IAbility
     {
         internal Trigger Trigger;

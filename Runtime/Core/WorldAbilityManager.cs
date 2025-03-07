@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Unity.Burst;
 
 namespace AxeEngine
 {
-    [BurstCompile]
     public class WorldAbilityManager : IDisposable
     {
         public Action CycleFinished { get; set; }

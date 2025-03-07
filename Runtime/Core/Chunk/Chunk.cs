@@ -1,11 +1,12 @@
 using System;
-using Unity.Burst;
+using Unity.IL2CPP.CompilerServices;
 using UnityEngine;
 
 namespace AxeEngine
 {
-    [BurstCompile]
     [Serializable]
+    [Il2CppSetOption(Option.NullChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
     public class Chunk<T> : IChunk where T : struct
     {
         private readonly T[] _defaultProperties = new T[1];

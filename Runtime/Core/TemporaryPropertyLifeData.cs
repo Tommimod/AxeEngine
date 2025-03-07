@@ -2,8 +2,6 @@ namespace AxeEngine
 {
     public struct TemporaryPropertyLifeData
     {
-        public bool CreatedNow => _createdNow;
-
         public readonly IActor Actor;
         public readonly object PropertyObject;
         public int LifecycleCount;
