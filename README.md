@@ -304,18 +304,16 @@ In case if you need to send some event or request to actor, you can create tempo
 ### Bool-property
 Sometimes you will have cases where you will want to enable or disable a property with true/false. This is an example of how to do it
 ```
-    public struct ExampleProperty
-    {
-        //should be without fields
-        //supporting with fields will be in future
-    }
-
-...
     public void Update()
     {
         var world = WorldBridge.Shared;
         var actor = ...GetSomeActor();
-        actor.SetPropertyEnabled<ExampleProperty>(Input.GetKeyDown(KeyCode.Space));
+        actor.SetDefaultPropertyEnabled<ExampleProperty>(Input.GetKeyDown(KeyCode.Space)); //for empty structs
+        
+        or for structs with fields
+        
+        var prop = new TestProp(1,"2",false);
+        actor.SetPropertyEnabled<TestProp>(Input.GetKeyDown(KeyCode.Space));
     }
 ```
 # Shall we go?
