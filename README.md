@@ -11,9 +11,8 @@ Not ECS, but APA. **Actor-Property-Ability**
 - easy API
 
 # Installation
-1. Download source code
-2. Double click by AxeEnginePackage.unitypackage
-3. In player settings add keyword **AXE_ENGINE_ENABLE_STATIC**. This will create static world, which required for custom inspector and tools. Do not enable this if you don't want to have static in project
+1. Download from package manager
+2. In player settings add keyword **AXE_ENGINE_ENABLE_STATIC**. This will create static world, which required for custom inspector and tools. Do not enable this if you don't want to have static in project
 
 *Download via package manager from git URL is not supported, because package can't see Assembly-Charp, which is required for reflections*
 
@@ -304,18 +303,16 @@ In case if you need to send some event or request to actor, you can create tempo
 ### Bool-property
 Sometimes you will have cases where you will want to enable or disable a property with true/false. This is an example of how to do it
 ```
-    public struct ExampleProperty
-    {
-        //should be without fields
-        //supporting with fields will be in future
-    }
-
-...
     public void Update()
     {
         var world = WorldBridge.Shared;
         var actor = ...GetSomeActor();
-        actor.SetPropertyEnabled<ExampleProperty>(Input.GetKeyDown(KeyCode.Space));
+        actor.SetDefaultPropertyEnabled<ExampleProperty>(Input.GetKeyDown(KeyCode.Space)); //for empty structs
+        
+        or for structs with fields
+        
+        var prop = new TestProp(1,"2",false);
+        actor.SetPropertyEnabled<TestProp>(Input.GetKeyDown(KeyCode.Space));
     }
 ```
 # Shall we go?

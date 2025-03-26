@@ -115,7 +115,7 @@ namespace AxeEngine.Tests
         }
 
         [Test]
-        public void CreateActorTest_GetPropWithoutProperty_ReturnDefault()
+        public void CreateActorTest_GetPropWithoutProperty_ReturnDefaultWithError()
         {
             LogAssert.ignoreFailingMessages = true;
             var actor = _world.CreateActor();
@@ -180,10 +180,22 @@ namespace AxeEngine.Tests
         public void CreateActor_EnableAndDisableProperty_True()
         {
             var actor = _world.CreateActor();
+            actor.AddProp<TestProperty>();
+            actor.SetPropertyEnabled<TestProperty>(false);
+            Assert.IsFalse(actor.HasProp<TestProperty>());
+
             actor.SetPropertyEnabled<TestProperty>(true);
             Assert.IsTrue(actor.HasProp<TestProperty>());
+        }
 
-            actor.SetPropertyEnabled<TestProperty>(false);
+        [Test]
+        public void CreateActor_EnableAndDisableDefaultProperty_True()
+        {
+            var actor = _world.CreateActor();
+            actor.SetDefaultPropertyEnabled<TestProperty>(true);
+            Assert.IsTrue(actor.HasProp<TestProperty>());
+
+            actor.SetDefaultPropertyEnabled<TestProperty>(false);
             Assert.IsFalse(actor.HasProp<TestProperty>());
         }
 

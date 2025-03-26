@@ -49,6 +49,7 @@ namespace AxeEngine
         /// <typeparam name="T">struct</typeparam>
         /// <returns>this actor</returns>
         IActor SetPropertyEnabled<T>(bool isEnabled) where T : struct;
+        IActor SetDefaultPropertyEnabled<T>(bool isEnabled) where T : struct;
 
         /// <summary>
         /// Add reference to property to actor. If exist, it will be replaced

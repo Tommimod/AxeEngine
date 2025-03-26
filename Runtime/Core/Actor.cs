@@ -29,8 +29,9 @@ namespace AxeEngine
             }
         }
 
-        internal readonly World _world;
+        private readonly World _world;
         private readonly List<Type> _properties = new();
+        private readonly List<Type> _disabledProperties = new();
 
         internal Actor(World world, int id)
         {
@@ -43,25 +44,34 @@ namespace AxeEngine
             IsAlive = true;
         }
 
-        public bool HasProp<T>() where T : struct => _world.GetChunk<T>().Has(Id);
+        public bool HasProp<T>() where T : struct => _world.GetChunk<T>().Has(Id) && !_disabledProperties.Contains(typeof(T));
         public ref T GetProp<T>() where T : struct => ref _world.GetChunk<T>().Get(Id);
         public object GetPropObject(Type type) => _world.GetChunkDynamic(type).Get(Id);
 
         public IActor SetPropertyEnabled<T>(bool isEnabled) where T : struct
         {
-            if (isEnabled)
+            var type = typeof(T);
+            if (!isEnabled && !_disabledProperties.Contains(type))
             {
-                if (!HasProp<T>())
-                {
-                    AddProp<T>();
-                }
+                _disabledProperties.Add(type);
             }
-            else
+            else if (isEnabled && _world.GetChunk<T>().Has(Id) && _disabledProperties.Contains(type))
             {
-                if (HasProp<T>())
-                {
-                    RemoveProp<T>();
-                }
+                _disabledProperties.Remove(type);
+            }
+
+            return this;
+        }
+
+        public IActor SetDefaultPropertyEnabled<T>(bool isEnabled) where T : struct
+        {
+            if (!isEnabled && HasProp<T>())
+            {
+                RemoveProp<T>();
+            }
+            else if (isEnabled && !HasProp<T>())
+            {
+                AddProp<T>();
             }
 
             return this;
@@ -140,19 +150,33 @@ namespace AxeEngine
 
         public void Release()
         {
+            _disabledProperties.Clear();
             _properties.Clear();
             IsAlive = false;
         }
 
         private void AddPropInternal<T>(ref T property) where T : struct
         {
-            _properties.Add(typeof(T));
+            var type = typeof(T);
+            if (_disabledProperties.Contains(type))
+            {
+                _disabledProperties.Remove(type);
+                RemovePropInternal<T>();
+            }
+
+            _properties.Add(type);
             _world.GetChunk<T>().Add(Id, ref property);
         }
 
         private void RemovePropInternal<T>() where T : struct
         {
-            _properties.Remove(typeof(T));
+            var type = typeof(T);
+            if (_disabledProperties.Contains(type))
+            {
+                _disabledProperties.Remove(type);
+            }
+
+            _properties.Remove(type);
             _world.GetChunk<T>().Remove(Id);
         }
     }

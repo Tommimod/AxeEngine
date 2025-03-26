@@ -23,7 +23,7 @@ namespace AxeEngine.Editor.Toolkit
         private DropdownField _componentsDropdown;
         private AxeEditorActor _editorActor;
 
-        private List<Type> _allTypes;
+        private Type[] _allTypes;
         private int _selectedComponentIndex;
         private readonly Dictionary<VisualElement, Array> _elementToArray = new();
         private readonly Dictionary<Type, VisualElement> _elementToType = new();
@@ -43,9 +43,9 @@ namespace AxeEngine.Editor.Toolkit
             _addButton = _myInspector.Q<Button>("AddButton");
             _componentsDropdown = _myInspector.Q<DropdownField>("ComponentsDropdown");
 
-            HandleComponentDropdown();
+            HandlePropertyDropdown();
             HandleAddButton(_componentsDropdown.value);
-            HandleComponentList();
+            HandlePropertyCollection();
             if (Application.isPlaying)
             {
                 _editorActor.OnPropertyChanged += OnActorChanged;
@@ -83,22 +83,21 @@ namespace AxeEngine.Editor.Toolkit
                 return;
             }
 
-            HandleOneComponent(changedType);
+            HandleSingleProperty(changedType);
         }
 
-        private void HandleComponentDropdown()
+        private void HandlePropertyDropdown()
         {
-            for (var i = 0; i < _allTypes.Count; i++)
+            foreach (var type in _allTypes)
             {
-                var type = _allTypes[i];
                 _componentsDropdown.choices.Add($"{type.GetCustomAttribute<AxeProperty>().Path}{type.Name}");
             }
 
             _componentsDropdown.value ??= _componentsDropdown.choices[0] ?? string.Empty;
-            _componentsDropdown.RegisterCallback<ChangeEvent<string>>(OnComponentSelected);
+            _componentsDropdown.RegisterCallback<ChangeEvent<string>>(OnPropertySelected);
         }
 
-        private void OnComponentSelected(ChangeEvent<string> evt)
+        private void OnPropertySelected(ChangeEvent<string> evt)
         {
             HandleAddButton(evt.newValue);
         }
@@ -124,22 +123,22 @@ namespace AxeEngine.Editor.Toolkit
             _editorActor.Validate();
 
             _addButton.SetEnabled(false);
-            HandleComponentList();
+            HandlePropertyCollection();
             EditorUtility.SetDirty(target);
         }
 
-        private void HandleComponentList()
+        private void HandlePropertyCollection()
         {
             _elementToType.Clear();
             _elementToArray.Clear();
             _componentList.hierarchy.Clear();
             foreach (var component in _editorActor.Properties)
             {
-                HandleOneComponent(component);
+                HandleSingleProperty(component);
             }
         }
 
-        private void HandleOneComponent(object component)
+        private void HandleSingleProperty(object component)
         {
             var componentVisualElement = new VisualElement();
             var currentType = component.GetType();
