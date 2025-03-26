@@ -14,13 +14,10 @@ namespace AxeEngine.Editor.Toolkit
     [CustomEditor(typeof(AxeEditorActor))]
     public class AxeInspectorToolkit : UnityEditor.Editor
     {
-        [SerializeField]
         private VisualTreeAsset _inspectorTreeAsset;
-        [SerializeField]
         private VisualTreeAsset _componentTreeAsset;
-        [SerializeField]
         private VisualTreeAsset _fieldInfoAsset;
-        
+
         private VisualElement _myInspector;
         private ListView _componentList;
         private Button _addButton;
@@ -36,6 +33,14 @@ namespace AxeEngine.Editor.Toolkit
         {
             _editorActor = (AxeEditorActor)target;
             _allTypes = AxeReflection.GetAllAxeTypes();
+
+            var allAssetPaths = AssetDatabase.GetAllAssetPaths();
+            var inspectorTreeAssetPath = allAssetPaths.FirstOrDefault(x => x.EndsWith("AxeInspectorToolkit.uxml"));
+            var componentTreeAssetPath = allAssetPaths.FirstOrDefault(x => x.EndsWith("AxeComponentToolkit.uxml"));
+            var fieldInfoAssetPath = allAssetPaths.FirstOrDefault(x => x.EndsWith("AxeComponentFieldInfoToolkit.uxml"));
+            _inspectorTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(inspectorTreeAssetPath);
+            _componentTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(componentTreeAssetPath);
+            _fieldInfoAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(fieldInfoAssetPath);
 
             _myInspector = new VisualElement();
             _inspectorTreeAsset.CloneTree(_myInspector);

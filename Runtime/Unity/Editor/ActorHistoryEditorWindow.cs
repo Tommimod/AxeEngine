@@ -1,4 +1,5 @@
 #if UNITY_EDITOR && AXE_ENGINE_ENABLE_STATIC
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -7,9 +8,7 @@ namespace AxeEngine.Editor
 {
     public class ActorHistoryEditorWindow : EditorWindow
     {
-        [SerializeField]
         private VisualTreeAsset _window;
-        [SerializeField]
         private VisualTreeAsset _actorEvent;
 
         private bool _showAdded;
@@ -31,6 +30,12 @@ namespace AxeEngine.Editor
             {
                 Debug.Break();
             }
+
+            var allAssetPaths = AssetDatabase.GetAllAssetPaths();
+            var windowPath = allAssetPaths.FirstOrDefault(x => x.EndsWith("Actor History.uxml"));
+            var actorEventPath = allAssetPaths.FirstOrDefault(x => x.EndsWith("ActorEventTemplete.uxml"));
+            _window = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(windowPath);
+            _actorEvent = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(actorEventPath);
 
             var windowView = _window.Instantiate();
             rootVisualElement.Add(windowView);
