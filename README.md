@@ -11,9 +11,8 @@ Not ECS, but APA. **Actor-Property-Ability**
 - easy API
 
 # Installation
-1. Download source code
-2. Double click by AxeEnginePackage.unitypackage
-3. In player settings add keyword **AXE_ENGINE_ENABLE_STATIC**. This will create static world, which required for custom inspector and tools. Do not enable this if you don't want to have static in project
+1. Download from package manager
+2. In player settings add keyword **AXE_ENGINE_ENABLE_STATIC**. This will create static world, which required for custom inspector and tools. Do not enable this if you don't want to have static in project
 
 *Download via package manager from git URL is not supported, because package can't see Assembly-Charp, which is required for reflections*
 
