@@ -14,9 +14,13 @@ namespace AxeEngine.Editor.Toolkit
     [CustomEditor(typeof(AxeEditorActor))]
     public class AxeInspectorToolkit : UnityEditor.Editor
     {
+        [SerializeField]
         private VisualTreeAsset _inspectorTreeAsset;
+        [SerializeField]
         private VisualTreeAsset _componentTreeAsset;
+        [SerializeField]
         private VisualTreeAsset _fieldInfoAsset;
+        
         private VisualElement _myInspector;
         private ListView _componentList;
         private Button _addButton;
@@ -30,9 +34,6 @@ namespace AxeEngine.Editor.Toolkit
 
         public override VisualElement CreateInspectorGUI()
         {
-            _inspectorTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/AxeEngineRepo/Runtime/Unity/Editor/Toolkit/AxeInspectorToolkit.uxml");
-            _componentTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/AxeEngineRepo/Runtime/Unity/Editor/Toolkit/AxeComponentToolkit.uxml");
-            _fieldInfoAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/AxeEngineRepo/Runtime/Unity/Editor/Toolkit/AxeComponentFieldInfoToolkit.uxml");
             _editorActor = (AxeEditorActor)target;
             _allTypes = AxeReflection.GetAllAxeTypes();
 

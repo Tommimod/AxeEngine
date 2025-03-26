@@ -4,10 +4,9 @@ MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
-  - _inspectorTreeAsset: {fileID: 9197481963319205126, guid: e811fa05d4a7c9444ab86593b3aabe8c,
-      type: 3}
-  - _componentTreeAsset: {fileID: 9197481963319205126, guid: f4f1e0d84692d434a94c6046172fe8d4,
-      type: 3}
+  - _inspectorTreeAsset: {fileID: 9197481963319205126, guid: e811fa05d4a7c9444ab86593b3aabe8c, type: 3}
+  - _componentTreeAsset: {fileID: 9197481963319205126, guid: f4f1e0d84692d434a94c6046172fe8d4, type: 3}
+  - _fieldInfoAsset: {fileID: 9197481963319205126, guid: 918ce893275a9494eb2a3a671a9270e6, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

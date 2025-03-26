@@ -7,7 +7,9 @@ namespace AxeEngine.Editor
 {
     public class ActorHistoryEditorWindow : EditorWindow
     {
+        [SerializeField]
         private VisualTreeAsset _window;
+        [SerializeField]
         private VisualTreeAsset _actorEvent;
 
         private bool _showAdded;
@@ -29,9 +31,6 @@ namespace AxeEngine.Editor
             {
                 Debug.Break();
             }
-
-            _window = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/AxeEngineRepo/Runtime/Unity/Editor/Toolkit/Actor History.uxml");
-            _actorEvent = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/AxeEngineRepo/Runtime/Unity/Editor/Toolkit/ActorEventTemplete.uxml");
 
             var windowView = _window.Instantiate();
             rootVisualElement.Add(windowView);
