@@ -87,6 +87,16 @@ namespace AxeEngine
             }
         }
 
+        public void RemoveAbility(Type abilityType)
+        {
+            _abilities.RemoveAll(x => x.GetType() == abilityType);
+            _initializeAbilities.RemoveAll(x => x.GetType() == abilityType);
+            _updateAbilities.RemoveAll(x => x.GetType() == abilityType);
+            _fixedUpdateAbilities.RemoveAll(x => x.GetType() == abilityType);
+            _tearDownAbilities.RemoveAll(x => x.GetType() == abilityType);
+            _reactiveAbilities.RemoveAll(x => x.GetType() == abilityType);
+        }
+
         public void SetActiveAbility(Type aType, bool isActive)
         {
             foreach (var aAbility in _abilities)

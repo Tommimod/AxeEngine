@@ -90,6 +90,7 @@ namespace AxeEngine.Editor.Toolkit
             }
 
             HandleSingleProperty(changedType);
+            _componentList.hierarchy.Sort((x,y) => string.Compare(x.Q<Label>("ComponentType").text, y.Q<Label>("ComponentType").text, StringComparison.Ordinal));
         }
 
         private void HandlePropertyDropdown()
@@ -142,6 +143,8 @@ namespace AxeEngine.Editor.Toolkit
             {
                 HandleSingleProperty(component);
             }
+
+            _componentList.hierarchy.Sort((x,y) => string.Compare(x.Q<Label>("ComponentType").text, y.Q<Label>("ComponentType").text, StringComparison.Ordinal));
         }
 
         private void HandleSingleProperty(object component)
