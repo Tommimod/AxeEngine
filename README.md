@@ -14,17 +14,16 @@ Not ECS, but APA. **Actor-Property-Ability**
 1. Download from package manager
 2. In player settings add keyword **AXE_ENGINE_ENABLE_STATIC**. This will create static world, which required for custom inspector and tools. Do not enable this if you don't want to have static in project
 
-*Download via package manager from git URL is not supported, because package can't see Assembly-Charp, which is required for reflections*
-
 # Unity Integration
 1. On game object add AxeEditorActor component
-2. for display properties in inspector add [AxeProperty] attribute. Also add [Serializable] attribute if some fields not visible
+2. for display properties in inspector add [AxeProperty] attribute. You can add path for your property in inspector by [AxeProperty("path/to/property")]
 
 ![image](https://github.com/user-attachments/assets/36d194bf-d0d6-498e-b79c-c53c042cb510)
 
 # Actors History
 Open Window -> Actor History
 Use filters to find needed event. Click on event to get details in console.
+Disable/Enable toggle "Collect events" for switch collector logic. Required reload game for apply changes
 
 ![image](https://github.com/user-attachments/assets/33aeec8e-ebef-449e-be7c-34d2b3a9a596)
 

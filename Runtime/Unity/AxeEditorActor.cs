@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Unity.Burst;
 using UnityEngine;
 
@@ -46,19 +45,14 @@ namespace AxeEngine.Editor
 
         private void OnActorChanged(IActor actor, Type type)
         {
+            Properties.RemoveAll(x => x.GetType() == type);
             Properties.Add(_actor.GetPropObject(type));
             OnPropertyChanged?.Invoke(type);
         }
 
         private void OnPropertyRemoved(IActor actor, Type type)
         {
-            var obj = Properties.FirstOrDefault(x => x.GetType() == type);
-            if (obj == null)
-            {
-                return;
-            }
-
-            Properties.Remove(obj);
+            Properties.RemoveAll(x => x.GetType() == type);
             OnPropertyChanged?.Invoke(type);
         }
 

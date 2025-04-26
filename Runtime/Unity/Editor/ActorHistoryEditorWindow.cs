@@ -8,9 +8,12 @@ namespace AxeEngine.Editor
 {
     public class ActorHistoryEditorWindow : EditorWindow
     {
+        public const string CollectEventPrefsKey = "CollEvPrK";
+
         private VisualTreeAsset _window;
         private VisualTreeAsset _actorEvent;
 
+        private bool _collectEvents;
         private bool _showAdded;
         private bool _showReplaced;
         private bool _showRemoved;
@@ -40,6 +43,10 @@ namespace AxeEngine.Editor
             var windowView = _window.Instantiate();
             rootVisualElement.Add(windowView);
 
+            var collectEvents = windowView.Q<Toggle>("CollectEvents");
+            _collectEvents = EditorPrefs.GetBool(CollectEventPrefsKey, false);
+            collectEvents.value = _collectEvents;
+            collectEvents.RegisterCallback<ChangeEvent<bool>>(IsCollectEvents);
             var showAdded = windowView.Q<Toggle>("Added");
             _showAdded = showAdded.value;
             showAdded.RegisterCallback<ChangeEvent<bool>>(IsAdded);
@@ -52,6 +59,12 @@ namespace AxeEngine.Editor
 
             WorldEditorEventCollector.OnActorEvent += AddEvent;
             Redraw();
+        }
+
+        private void IsCollectEvents(ChangeEvent<bool> evt)
+        {
+            _collectEvents = evt.newValue;
+            EditorPrefs.SetBool(CollectEventPrefsKey, _collectEvents);
         }
 
         private void OnDestroy()
