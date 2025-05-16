@@ -16,7 +16,6 @@ namespace AxeEngine.Editor
         public static event Action<ActorEvent> OnActorEvent;
         public static IEnumerable<ActorEvent> ActorEvents => _actorEvents;
 
-        private static WorldEditorEventCollector _instance;
         private static StringBuilder _stringBuilder;
         private static readonly List<ActorEvent> _actorEvents = new();
 
@@ -38,6 +37,12 @@ namespace AxeEngine.Editor
 
         private static void Initialize()
         {
+            var isEnabled = EditorPrefs.GetBool(ActorHistoryEditorWindow.CollectEventPrefsKey, false);
+            if (!isEnabled)
+            {
+                return;
+            }
+
             _stringBuilder = new StringBuilder();
             var world = WorldBridge.Shared;
             var actors = world.GetAllActors();
@@ -54,6 +59,12 @@ namespace AxeEngine.Editor
 
         private static void Dispose()
         {
+            var isEnabled = EditorPrefs.GetBool(ActorHistoryEditorWindow.CollectEventPrefsKey, false);
+            if (!isEnabled)
+            {
+                return;
+            }
+
             var world = WorldBridge.Shared;
             world.OnActorCreated -= OnEntityCreated;
             world.OnActorDestroyed -= OnEntityDestroyed;
@@ -88,16 +99,17 @@ namespace AxeEngine.Editor
 
         private static void OnPropertyAdded(IActor actor, Type type)
         {
+            var propInstance = actor.GetPropObject(type);
             var id = actor.Id;
             var gameObject = TryGetGameObject(actor);
-            var gameObjectName = gameObject != null ? $"{gameObject.name}({id})" : id.ToString();
+            var gameObjectName = gameObject ? $"{gameObject.name}({id})" : id.ToString();
             var fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             foreach (var field in fields)
             {
                 object value = null;
                 try
                 {
-                    value = field.GetValue(type);
+                    value = field.GetValue(propInstance);
                 }
                 catch
                 {
@@ -114,16 +126,17 @@ namespace AxeEngine.Editor
 
         private static void OnPropertyReplaced(IActor actor, Type type)
         {
+            var propInstance = actor.GetPropObject(type);
             var id = actor.Id;
             var gameObject = TryGetGameObject(actor);
-            var gameObjectName = gameObject != null ? $"{gameObject.name}({id})" : id.ToString();
+            var gameObjectName = gameObject ? $"{gameObject.name}({id})" : id.ToString();
             var fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             foreach (var field in fields)
             {
                 object value = null;
                 try
                 {
-                    value = field.GetValue(type);
+                    value = field.GetValue(propInstance);
                 }
                 catch
                 {
@@ -140,16 +153,17 @@ namespace AxeEngine.Editor
 
         private static void OnPropertyRemoved(IActor actor, Type type)
         {
+            var propInstance = actor.GetPropObject(type);
             var id = actor.Id;
             var gameObject = TryGetGameObject(actor);
-            var gameObjectName = gameObject != null ? $"{gameObject.name}({id})" : id.ToString();
+            var gameObjectName = gameObject ? $"{gameObject.name}({id})" : id.ToString();
             var fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             foreach (var field in fields)
             {
                 object value = null;
                 try
                 {
-                    value = field.GetValue(type);
+                    value = field.GetValue(propInstance);
                 }
                 catch
                 {
