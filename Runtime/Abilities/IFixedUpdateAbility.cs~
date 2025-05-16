@@ -1,0 +1,8 @@
+namespace AxeEngine
+{
+    public interface IFixedUpdateAbility : IAbility
+    {
+        delegate void Delegate(World world);
+        void FixedUpdate(World world);
+    }
+}

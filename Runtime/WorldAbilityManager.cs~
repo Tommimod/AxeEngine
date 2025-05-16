@@ -1,0 +1,259 @@
+using System;
+using System.Collections.Generic;
+using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
+
+namespace AxeEngine
+{
+    public unsafe class WorldAbilityManager : IDisposable
+    {
+        public Action CycleFinished { get; set; }
+
+        private readonly World _world;
+        private readonly List<IAbility> _abilities = new(); // Для общего управления
+        private readonly List<AbilityPointer> _initializeAbilityPtrs = new();
+        private readonly List<AbilityPointer> _updateAbilityPtrs = new();
+        private readonly List<AbilityPointer> _fixedUpdateAbilityPtrs = new();
+        private readonly List<AbilityPointer> _tearDownAbilityPtrs = new();
+        private readonly List<AReactiveAbility> _reactiveAbilities = new();
+
+        // Структура для хранения указателя и типа способности
+        private struct AbilityPointer
+        {
+            public IntPtr Ptr;
+            public Type Type;
+
+            public AbilityPointer(IntPtr ptr, Type type)
+            {
+                Ptr = ptr;
+                Type = type;
+            }
+        }
+
+        public WorldAbilityManager(World world)
+        {
+            _world = world;
+        }
+
+        public void AddAbility<T>(T ability) where T : struct, IAbility
+        {
+            _abilities.Add(ability);
+            ability.IsEnabled = true;
+
+            // Выделяем память для структуры
+            IntPtr abilityPtr = (IntPtr)UnsafeUtility.Malloc(
+                UnsafeUtility.SizeOf<T>(),
+                UnsafeUtility.AlignOf<T>(),
+                Allocator.Persistent);
+
+            // Копируем структуру в выделенную память
+            UnsafeUtility.CopyStructureToPtr(ref ability, (void*)abilityPtr);
+
+            // Создаём AbilityPointer с типом
+            var abilityPointer = new AbilityPointer(abilityPtr, typeof(T));
+
+            // Регистрируем способность на основе её интерфейсов
+            RegisterAbilityInterfaces(ability, abilityPointer);
+        }
+
+        // Отдельный метод для добавления реактивных способностей (классов)
+        public void AddReactiveAbility(AReactiveAbility reactiveAbility)
+        {
+            _abilities.Add(reactiveAbility);
+            reactiveAbility.IsEnabled = true;
+            _reactiveAbilities.Add(reactiveAbility);
+            reactiveAbility.Trigger = reactiveAbility.TriggerBy();
+            _world.AddTrigger(reactiveAbility.Trigger);
+        }
+
+        private void RegisterAbilityInterfaces<T>(T ability, AbilityPointer abilityPointer) where T : struct, IAbility
+        {
+            if (typeof(IInitializeAbility).IsAssignableFrom(typeof(T)))
+            {
+                _initializeAbilityPtrs.Add(abilityPointer);
+            }
+            if (typeof(IUpdateAbility).IsAssignableFrom(typeof(T)))
+            {
+                _updateAbilityPtrs.Add(abilityPointer);
+            }
+            if (typeof(IFixedUpdateAbility).IsAssignableFrom(typeof(T)))
+            {
+                _fixedUpdateAbilityPtrs.Add(abilityPointer);
+            }
+            if (typeof(ITearDownAbility).IsAssignableFrom(typeof(T)))
+            {
+                _tearDownAbilityPtrs.Add(abilityPointer);
+            }
+        }
+
+        public void RemoveAbility(IAbility ability)
+        {
+            if (!_abilities.Contains(ability))
+            {
+                return;
+            }
+
+            _abilities.Remove(ability);
+
+            // Находим указатель способности по её типу
+            Type abilityType = ability.GetType();
+            AbilityPointer abilityPointer = default;
+
+            foreach (var ptr in _initializeAbilityPtrs)
+            {
+                if (ptr.Type == abilityType)
+                {
+                    abilityPointer = ptr;
+                    break;
+                }
+            }
+
+            if (abilityPointer.Ptr != IntPtr.Zero)
+            {
+                // Удаляем из всех списков
+                _initializeAbilityPtrs.Remove(abilityPointer);
+                _updateAbilityPtrs.Remove(abilityPointer);
+                _fixedUpdateAbilityPtrs.Remove(abilityPointer);
+                _tearDownAbilityPtrs.Remove(abilityPointer);
+                // Освобождаем память
+                UnsafeUtility.Free((void*)abilityPointer.Ptr, Allocator.Persistent);
+            }
+
+            if (ability is AReactiveAbility reactiveAbility)
+            {
+                _reactiveAbilities.Remove(reactiveAbility);
+            }
+        }
+
+        public void SetActiveAbility(Type aType, bool isActive)
+        {
+            foreach (var ability in _abilities)
+            {
+                if (ability.GetType() == aType)
+                {
+                    ability.IsEnabled = isActive;
+                }
+            }
+        }
+
+        private void ExecuteAbility<T>(AbilityPointer ptr, Action<T> executeAction) where T : struct, IAbility
+        {
+            // Копируем структуру из памяти
+            T ability = default;
+            UnsafeUtility.CopyPtrToStructure((void*)ptr.Ptr, out ability);
+
+            if (ability.IsEnabled)
+            {
+                executeAction(ability);
+
+                // Обновляем структуру в памяти
+                UnsafeUtility.CopyStructureToPtr(ref ability, (void*)ptr.Ptr);
+            }
+        }
+
+        public void PerformInitialization()
+        {
+            foreach (var ptr in _initializeAbilityPtrs)
+            {
+                if (ptr.Type.GetInterface(nameof(IInitializeAbility)) != null)
+                {
+                    ExecuteAbility(ptr, (IInitializeAbility ability) => ability.Initialize(_world));
+                }
+            }
+        }
+
+        public void PerformUpdate()
+        {
+            foreach (var ptr in _updateAbilityPtrs)
+            {
+                if (ptr.Type.GetInterface(nameof(IUpdateAbility)) != null)
+                {
+                    ExecuteAbility(ptr, (IUpdateAbility ability) => ability.Update(_world));
+                }
+            }
+
+            foreach (var reactiveAbility in _reactiveAbilities)
+            {
+                if (!reactiveAbility.IsEnabled)
+                {
+                    continue;
+                }
+
+                var execute = true;
+                var actors = reactiveAbility.Trigger.GetValidActors();
+                if (actors.Count == 0)
+                {
+                    continue;
+                }
+
+                foreach (var actor in actors)
+                {
+                    if (reactiveAbility.IsCanExecute(actor))
+                    {
+                        continue;
+                    }
+                    execute = false;
+                    break;
+                }
+
+                if (!execute)
+                {
+                    continue;
+                }
+
+                reactiveAbility.Execute(actors);
+            }
+        }
+
+        public void PerformFixedUpdate()
+        {
+            foreach (var ptr in _fixedUpdateAbilityPtrs)
+            {
+                if (ptr.Type.GetInterface(nameof(IFixedUpdateAbility)) != null)
+                {
+                    ExecuteAbility(ptr, (IFixedUpdateAbility ability) => ability.FixedUpdate(_world));
+                }
+            }
+        }
+
+        public void PerformTearDown()
+        {
+            foreach (var ptr in _tearDownAbilityPtrs)
+            {
+                if (ptr.Type.GetInterface(nameof(ITearDownAbility)) != null)
+                {
+                    ExecuteAbility(ptr, (ITearDownAbility ability) => ability.TearDown(_world));
+                }
+            }
+            CycleFinished?.Invoke();
+        }
+
+        public void Dispose()
+        {
+            // Освобождаем память для всех указателей
+            foreach (var ptr in _initializeAbilityPtrs)
+            {
+                UnsafeUtility.Free((void*)ptr.Ptr, Allocator.Persistent);
+            }
+            foreach (var ptr in _updateAbilityPtrs)
+            {
+                UnsafeUtility.Free((void*)ptr.Ptr, Allocator.Persistent);
+            }
+            foreach (var ptr in _fixedUpdateAbilityPtrs)
+            {
+                UnsafeUtility.Free((void*)ptr.Ptr, Allocator.Persistent);
+            }
+            foreach (var ptr in _tearDownAbilityPtrs)
+            {
+                UnsafeUtility.Free((void*)ptr.Ptr, Allocator.Persistent);
+            }
+
+            _abilities.Clear();
+            _initializeAbilityPtrs.Clear();
+            _updateAbilityPtrs.Clear();
+            _fixedUpdateAbilityPtrs.Clear();
+            _tearDownAbilityPtrs.Clear();
+            _reactiveAbilities.Clear();
+        }
+    }
+}

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.Collections;
 using Unity.IL2CPP.CompilerServices;
 
 namespace AxeEngine
@@ -16,6 +17,10 @@ namespace AxeEngine
         public Action<IActor, Type> OnPropertyRemoved { get; set; }
 
         IReadOnlyList<Type> IActor.GetAllProperties() => _properties;
+        NativeArray<ulong> IActor.GetComponentMasks(int maskCount)
+        {
+            throw new NotImplementedException();
+        }
 
         void IActor.RemovePropInternal(object property)
         {

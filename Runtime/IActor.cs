@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.Collections;
 
 namespace AxeEngine
 {
@@ -8,6 +9,7 @@ namespace AxeEngine
         #region internal
 
         internal IReadOnlyList<Type> GetAllProperties();
+        internal NativeArray<ulong> GetComponentMasks(int maskCount);
         internal void Restore();
         internal void RemovePropInternal(object property);
 

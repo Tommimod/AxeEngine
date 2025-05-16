@@ -11,7 +11,7 @@ namespace AxeEngine
         /// <summary>
         /// Applied filter options
         /// </summary>
-        public FilterOption Options { get; private set; }
+        internal FilterOption Options { get; private set; }
 
         private readonly World _world;
         private readonly HashSet<IActor> _actors = new();

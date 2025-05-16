@@ -1,15 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Burst;
 using UnityEngine;
 
 namespace AxeEngine.Editor
 {
-    [BurstCompile]
     public class AxeEditorActor : MonoBehaviour
     {
-        #if AXE_ENGINE_ENABLE_STATIC
+#if AXE_ENGINE_ENABLE_STATIC
         public int ActorId => _actor.Id;
         public Action<Type> OnPropertyChanged;
 

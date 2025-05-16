@@ -7,7 +7,7 @@ namespace AxeEngine
     [Serializable]
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
-    public class Chunk<T> : IChunk where T : struct
+    internal class Chunk<T> : IChunk where T : struct
     {
         private readonly T[] _defaultProperties = new T[1];
         private T[] _properties;

@@ -134,7 +134,6 @@ Use filters to find needed event. Click on event to get details in console.
 # Abilities
 ### Initialize ability
 ```
-    [BurstCompile]
     public struct ExampleInitializeAbility: IInitializeAbility
     {
         public bool IsEnabled { get; set; }
@@ -146,7 +145,6 @@ Use filters to find needed event. Click on event to get details in console.
 ```
 ### Update ability
 ```
-    [BurstCompile]
     public struct ExampleUpdateAbility: IUpdateAbility
     {
         public bool IsEnabled { get; set; }
@@ -158,7 +156,6 @@ Use filters to find needed event. Click on event to get details in console.
 ```
 ### Fixed update ability
 ```
-    [BurstCompile]
     public struct ExampleFixedUpdateAbility: IFixedUpdateAbility
     {
         public bool IsEnabled { get; set; }
@@ -170,7 +167,6 @@ Use filters to find needed event. Click on event to get details in console.
 ```
 ### Tear down ability
 ```
-    [BurstCompile]
     public struct ExampleTearDownAbility: ITearDownAbility
     {
         public bool IsEnabled { get; set; }
@@ -180,9 +176,7 @@ Use filters to find needed event. Click on event to get details in console.
         }
     }
 ```
-> [!TIP]
-> Add [BurstCompile] attribute to all struct abilities for best performance
-### Reactive ability
+### Reactive ability (class only)
 ```
     public struct ExampleIntProperty
     {

@@ -1,11 +1,11 @@
-#if AXE_ENGINE_ENABLE_STATIC
+#if AXE_ENGINE_ENABLE_STATIC && UNITY_EDITOR
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
-using UnityEditor.UIElements;
+
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -357,7 +357,7 @@ namespace AxeEngine.Editor.Toolkit
             else if (fieldType.IsUnityObject())
             {
                 var value = (UnityEngine.Object)fieldInfo.Value;
-                visualElement = new ObjectField { value = value };
+                visualElement = new UnityEditor.UIElements.ObjectField { value = value };
                 if (fieldContainer.hierarchy.childCount == 0)
                 {
                     fieldContainer.contentContainer.Add(visualElement);
@@ -375,7 +375,7 @@ namespace AxeEngine.Editor.Toolkit
                 }
 
                 visualElement.RegisterCallback<ChangeEvent<UnityEngine.Object>>(OnChanged);
-                var objectField = (ObjectField)visualElement;
+                var objectField = (UnityEditor.UIElements.ObjectField)visualElement;
                 objectField.objectType = fieldType;
                 objectField.allowSceneObjects = true;
 
@@ -468,7 +468,7 @@ namespace AxeEngine.Editor.Toolkit
             else if (fieldType.IsColor())
             {
                 var value = (Color)fieldInfo.Value;
-                visualElement = new ColorField { value = value };
+                visualElement = new UnityEditor.UIElements.ColorField { value = value };
                 if (fieldContainer.hierarchy.childCount == 0)
                 {
                     fieldContainer.contentContainer.Add(visualElement);
@@ -495,7 +495,7 @@ namespace AxeEngine.Editor.Toolkit
             else if (fieldType.IsCurve())
             {
                 var value = (AnimationCurve)fieldInfo.Value;
-                visualElement = new CurveField { value = value };
+                visualElement = new UnityEditor.UIElements.CurveField { value = value };
                 if (fieldContainer.hierarchy.childCount == 0)
                 {
                     fieldContainer.contentContainer.Add(visualElement);

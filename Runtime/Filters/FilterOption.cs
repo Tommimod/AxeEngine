@@ -1,0 +1,217 @@
+using System;
+using Unity.Burst;
+using Unity.Collections;
+using Unity.IL2CPP.CompilerServices;
+
+namespace AxeEngine
+{
+    [BurstCompile]
+    [Il2CppSetOption(Option.NullChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+    public readonly struct FilterOption : IEquatable<FilterOption>
+    {
+        private readonly NativeArray<ulong> _withMasks;
+        private readonly NativeArray<ulong> _withAnyMasks;
+        private readonly NativeArray<ulong> _withoutMasks;
+        private readonly int _maskCount;
+
+        /// <summary>
+        /// Use for create initialized FilterOption
+        /// maskCount - count of supported components (mask count * 64)
+        /// </summary>
+        public static FilterOption Empty => new(2);
+
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        /// <param name="maskCount">maskCount - count of supported components (mask count * 64)</param>
+        public FilterOption(int maskCount)
+        {
+            _maskCount = maskCount;
+            _withMasks = new NativeArray<ulong>(maskCount, Allocator.Persistent);
+            _withAnyMasks = new NativeArray<ulong>(maskCount, Allocator.Persistent);
+            _withoutMasks = new NativeArray<ulong>(maskCount, Allocator.Persistent);
+        }
+
+        public bool IsEquals(FilterOption other)
+        {
+            if (_maskCount != other._maskCount) return false;
+            for (var i = 0; i < _maskCount; i++)
+            {
+                if (_withMasks[i] != other._withMasks[i] ||
+                    _withAnyMasks[i] != other._withAnyMasks[i] ||
+                    _withoutMasks[i] != other._withoutMasks[i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public bool IsValid(IActor actor)
+        {
+            var actorMasks = actor.GetComponentMasks(_maskCount);
+            for (var i = 0; i < _maskCount; i++)
+            {
+                if ((_withMasks[i] & actorMasks[i]) != _withMasks[i]) return false;
+                if (_withAnyMasks[i] != 0 && (_withAnyMasks[i] & actorMasks[i]) == 0) return false;
+                if ((_withoutMasks[i] & actorMasks[i]) != 0) return false;
+            }
+
+            return true;
+        }
+
+        public FilterOption With<T>() where T : struct
+        {
+            return AddTypeToMask<T>(_withMasks);
+        }
+
+        public FilterOption With<T, T1>() where T : struct where T1 : struct
+        {
+            return AddTypeToMask<T>(_withMasks).AddTypeToMask<T1>(_withMasks);
+        }
+
+        public FilterOption With<T, T1, T2>() where T : struct where T1 : struct where T2 : struct
+        {
+            return AddTypeToMask<T>(_withMasks).AddTypeToMask<T1>(_withMasks).AddTypeToMask<T2>(_withMasks);
+        }
+
+        public FilterOption With<T, T1, T2, T3>() where T : struct where T1 : struct where T2 : struct where T3 : struct
+        {
+            return AddTypeToMask<T>(_withMasks).AddTypeToMask<T1>(_withMasks).AddTypeToMask<T2>(_withMasks).AddTypeToMask<T3>(_withMasks);
+        }
+
+        public FilterOption With<T, T1, T2, T3, T4>() where T : struct where T1 : struct where T2 : struct where T3 : struct where T4 : struct
+        {
+            return AddTypeToMask<T>(_withMasks).AddTypeToMask<T1>(_withMasks).AddTypeToMask<T2>(_withMasks).AddTypeToMask<T3>(_withMasks).AddTypeToMask<T4>(_withMasks);
+        }
+
+        public FilterOption With<T, T1, T2, T3, T4, T5>() where T : struct where T1 : struct where T2 : struct where T3 : struct where T4 : struct where T5 : struct
+        {
+            return AddTypeToMask<T>(_withMasks).AddTypeToMask<T1>(_withMasks).AddTypeToMask<T2>(_withMasks).AddTypeToMask<T3>(_withMasks).AddTypeToMask<T4>(_withMasks).AddTypeToMask<T5>(_withMasks);
+        }
+
+        public FilterOption With<T, T1, T2, T3, T4, T5, T6>() where T : struct where T1 : struct where T2 : struct where T3 : struct where T4 : struct where T5 : struct where T6 : struct
+        {
+            return AddTypeToMask<T>(_withMasks).AddTypeToMask<T1>(_withMasks).AddTypeToMask<T2>(_withMasks).AddTypeToMask<T3>(_withMasks).AddTypeToMask<T4>(_withMasks).AddTypeToMask<T5>(_withMasks).AddTypeToMask<T6>(_withMasks);
+        }
+
+        public FilterOption With<T, T1, T2, T3, T4, T5, T6, T7>() where T : struct where T1 : struct where T2 : struct where T3 : struct where T4 : struct where T5 : struct where T6 : struct where T7 : struct
+        {
+            return AddTypeToMask<T>(_withMasks).AddTypeToMask<T1>(_withMasks).AddTypeToMask<T2>(_withMasks).AddTypeToMask<T3>(_withMasks).AddTypeToMask<T4>(_withMasks).AddTypeToMask<T5>(_withMasks).AddTypeToMask<T6>(_withMasks)
+                .AddTypeToMask<T7>(_withMasks);
+        }
+
+        public FilterOption WithAny<T>() where T : struct
+        {
+            return AddTypeToMask<T>(_withAnyMasks);
+        }
+
+        public FilterOption WithAny<T, T1>() where T : struct where T1 : struct
+        {
+            return AddTypeToMask<T>(_withAnyMasks).AddTypeToMask<T1>(_withAnyMasks);
+        }
+
+        public FilterOption WithAny<T, T1, T2>() where T : struct where T1 : struct where T2 : struct
+        {
+            return AddTypeToMask<T>(_withAnyMasks).AddTypeToMask<T1>(_withAnyMasks).AddTypeToMask<T2>(_withAnyMasks);
+        }
+
+        public FilterOption WithAny<T, T1, T2, T3>() where T : struct where T1 : struct where T2 : struct where T3 : struct
+        {
+            return AddTypeToMask<T>(_withAnyMasks).AddTypeToMask<T1>(_withAnyMasks).AddTypeToMask<T2>(_withAnyMasks).AddTypeToMask<T3>(_withAnyMasks);
+        }
+
+        public FilterOption WithAny<T, T1, T2, T3, T4>() where T : struct where T1 : struct where T2 : struct where T3 : struct where T4 : struct
+        {
+            return AddTypeToMask<T>(_withAnyMasks).AddTypeToMask<T1>(_withAnyMasks).AddTypeToMask<T2>(_withAnyMasks).AddTypeToMask<T3>(_withAnyMasks).AddTypeToMask<T4>(_withAnyMasks);
+        }
+
+        public FilterOption WithAny<T, T1, T2, T3, T4, T5>() where T : struct where T1 : struct where T2 : struct where T3 : struct where T4 : struct where T5 : struct
+        {
+            return AddTypeToMask<T>(_withAnyMasks).AddTypeToMask<T1>(_withAnyMasks).AddTypeToMask<T2>(_withAnyMasks).AddTypeToMask<T3>(_withAnyMasks).AddTypeToMask<T4>(_withAnyMasks).AddTypeToMask<T5>(_withAnyMasks);
+        }
+
+        public FilterOption WithAny<T, T1, T2, T3, T4, T5, T6>() where T : struct where T1 : struct where T2 : struct where T3 : struct where T4 : struct where T5 : struct where T6 : struct
+        {
+            return AddTypeToMask<T>(_withAnyMasks).AddTypeToMask<T1>(_withAnyMasks).AddTypeToMask<T2>(_withAnyMasks).AddTypeToMask<T3>(_withAnyMasks).AddTypeToMask<T4>(_withAnyMasks).AddTypeToMask<T5>(_withAnyMasks).AddTypeToMask<T6>(_withAnyMasks);
+        }
+
+        public FilterOption WithAny<T, T1, T2, T3, T4, T5, T6, T7>() where T : struct where T1 : struct where T2 : struct where T3 : struct where T4 : struct where T5 : struct where T6 : struct where T7 : struct
+        {
+            return AddTypeToMask<T>(_withAnyMasks).AddTypeToMask<T1>(_withAnyMasks).AddTypeToMask<T2>(_withAnyMasks).AddTypeToMask<T3>(_withAnyMasks).AddTypeToMask<T4>(_withAnyMasks).AddTypeToMask<T5>(_withAnyMasks).AddTypeToMask<T6>(_withAnyMasks)
+                .AddTypeToMask<T7>(_withAnyMasks);
+        }
+
+        public FilterOption Without<T>() where T : struct
+        {
+            return AddTypeToMask<T>(_withoutMasks);
+        }
+
+        public FilterOption Without<T, T1>() where T : struct where T1 : struct
+        {
+            return AddTypeToMask<T>(_withoutMasks).AddTypeToMask<T1>(_withoutMasks);
+        }
+
+        public FilterOption Without<T, T1, T2>() where T : struct where T1 : struct where T2 : struct
+        {
+            return AddTypeToMask<T>(_withoutMasks).AddTypeToMask<T1>(_withoutMasks).AddTypeToMask<T2>(_withoutMasks);
+        }
+
+        public FilterOption Without<T, T1, T2, T3>() where T : struct where T1 : struct where T2 : struct where T3 : struct
+        {
+            return AddTypeToMask<T>(_withoutMasks).AddTypeToMask<T1>(_withoutMasks).AddTypeToMask<T2>(_withoutMasks).AddTypeToMask<T3>(_withoutMasks);
+        }
+
+        public FilterOption Without<T, T1, T2, T3, T4>() where T : struct where T1 : struct where T2 : struct where T3 : struct where T4 : struct
+        {
+            return AddTypeToMask<T>(_withoutMasks).AddTypeToMask<T1>(_withoutMasks).AddTypeToMask<T2>(_withoutMasks).AddTypeToMask<T3>(_withoutMasks).AddTypeToMask<T4>(_withoutMasks);
+        }
+
+        public FilterOption Without<T, T1, T2, T3, T4, T5>() where T : struct where T1 : struct where T2 : struct where T3 : struct where T4 : struct where T5 : struct
+        {
+            return AddTypeToMask<T>(_withoutMasks).AddTypeToMask<T1>(_withoutMasks).AddTypeToMask<T2>(_withoutMasks).AddTypeToMask<T3>(_withoutMasks).AddTypeToMask<T4>(_withoutMasks).AddTypeToMask<T5>(_withoutMasks);
+        }
+
+        public FilterOption Without<T, T1, T2, T3, T4, T5, T6>() where T : struct where T1 : struct where T2 : struct where T3 : struct where T4 : struct where T5 : struct where T6 : struct
+        {
+            return AddTypeToMask<T>(_withoutMasks).AddTypeToMask<T1>(_withoutMasks).AddTypeToMask<T2>(_withoutMasks).AddTypeToMask<T3>(_withoutMasks).AddTypeToMask<T4>(_withoutMasks).AddTypeToMask<T5>(_withoutMasks).AddTypeToMask<T6>(_withoutMasks);
+        }
+
+        public FilterOption Without<T, T1, T2, T3, T4, T5, T6, T7>() where T : struct where T1 : struct where T2 : struct where T3 : struct where T4 : struct where T5 : struct where T6 : struct where T7 : struct
+        {
+            return AddTypeToMask<T>(_withoutMasks).AddTypeToMask<T1>(_withoutMasks).AddTypeToMask<T2>(_withoutMasks).AddTypeToMask<T3>(_withoutMasks).AddTypeToMask<T4>(_withoutMasks).AddTypeToMask<T5>(_withoutMasks).AddTypeToMask<T6>(_withoutMasks)
+                .AddTypeToMask<T7>(_withoutMasks);
+        }
+
+        private FilterOption AddTypeToMask<T>(NativeArray<ulong> masks) where T : struct
+        {
+            var index = PropertyTypeMapper.GetComponentIndex(typeof(T));
+            var arrayIndex = PropertyTypeMapper.GetMaskArrayIndex(index);
+            var bitIndex = PropertyTypeMapper.GetMaskBitIndex(index);
+            if (arrayIndex >= _maskCount)
+            {
+                throw new Exception("Component index out of range. Increase maskCount.");
+            }
+
+            masks[arrayIndex] |= 1UL << bitIndex;
+            return this;
+        }
+
+        public bool Equals(FilterOption other)
+        {
+            return _withMasks.Equals(other._withMasks) && _withAnyMasks.Equals(other._withAnyMasks) && _withoutMasks.Equals(other._withoutMasks) && _maskCount == other._maskCount;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is FilterOption other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(_withMasks, _withAnyMasks, _withoutMasks, _maskCount);
+        }
+    }
+}

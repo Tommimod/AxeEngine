@@ -1,6 +1,6 @@
 namespace AxeEngine
 {
-    public struct TemporaryPropertyLifeData
+    internal struct TemporaryPropertyLifeData
     {
         public readonly IActor Actor;
         public readonly object PropertyObject;
