@@ -1,12 +1,14 @@
+#if UNITY_EDITOR
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Unity.Burst;
 using UnityEditor;
 using UnityEngine;
 
 namespace AxeEngine.Editor
 {
+    [BurstCompile]
     public static class AxeReflection
     {
         public static Type[] GetAllAxeTypes()
@@ -67,3 +69,4 @@ namespace AxeEngine.Editor
         }
     }
 }
+#endif

@@ -133,7 +133,6 @@ Disable/Enable toggle "Collect events" for switch collector logic. Required relo
 # Abilities
 ### Initialize ability
 ```
-    [BurstCompile]
     public struct ExampleInitializeAbility: IInitializeAbility
     {
         public bool IsEnabled { get; set; }
@@ -145,7 +144,6 @@ Disable/Enable toggle "Collect events" for switch collector logic. Required relo
 ```
 ### Update ability
 ```
-    [BurstCompile]
     public struct ExampleUpdateAbility: IUpdateAbility
     {
         public bool IsEnabled { get; set; }
@@ -157,7 +155,6 @@ Disable/Enable toggle "Collect events" for switch collector logic. Required relo
 ```
 ### Fixed update ability
 ```
-    [BurstCompile]
     public struct ExampleFixedUpdateAbility: IFixedUpdateAbility
     {
         public bool IsEnabled { get; set; }
@@ -169,7 +166,6 @@ Disable/Enable toggle "Collect events" for switch collector logic. Required relo
 ```
 ### Tear down ability
 ```
-    [BurstCompile]
     public struct ExampleTearDownAbility: ITearDownAbility
     {
         public bool IsEnabled { get; set; }
@@ -179,9 +175,7 @@ Disable/Enable toggle "Collect events" for switch collector logic. Required relo
         }
     }
 ```
-> [!TIP]
-> Add [BurstCompile] attribute to all struct abilities for best performance
-### Reactive ability
+### Reactive ability (class only)
 ```
     public struct ExampleIntProperty
     {

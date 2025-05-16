@@ -1,0 +1,201 @@
+using System;
+using System.Collections.Generic;
+using Unity.Collections;
+using Unity.IL2CPP.CompilerServices;
+
+namespace AxeEngine
+{
+    [Il2CppSetOption(Option.NullChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+    public class Actor : IActor
+    {
+        public bool IsAlive { get; private set; }
+        public int Id { get; }
+        public Action<IActor, Type> OnPropertyAdded { get; set; }
+        public Action<IActor, object, int> OnTemporaryPropertyAdded { get; set; }
+        public Action<IActor, Type> OnPropertyReplaced { get; set; }
+        public Action<IActor, Type> OnPropertyRemoved { get; set; }
+
+        IReadOnlyList<Type> IActor.GetAllProperties() => _properties;
+        NativeArray<ulong> IActor.GetComponentMasks(int maskCount)
+        {
+            var masks = new NativeArray<ulong>(maskCount, Allocator.Temp);
+            foreach (var propertyType in _properties)
+            {
+                if (_disabledProperties.Contains(propertyType)) continue;
+
+                var index = PropertyTypeMapper.GetComponentIndex(propertyType);
+                var arrayIndex = index / 64;
+                var bitIndex = index % 64;
+                if (arrayIndex < maskCount)
+                {
+                    masks[arrayIndex] |= 1UL << bitIndex;
+                }
+            }
+            return masks;
+        }
+
+        void IActor.RemovePropInternal(object property)
+        {
+            var type = property.GetType();
+            var chunk = _world.GetChunkDynamic(type);
+            if (chunk.Has(Id))
+            {
+                chunk.Remove(Id);
+                _properties.Remove(type);
+                OnPropertyRemoved?.Invoke(this, type);
+            }
+        }
+
+        private readonly World _world;
+        private readonly List<Type> _properties = new();
+        private readonly List<Type> _disabledProperties = new();
+
+        internal Actor(World world, int id)
+        {
+            _world = world;
+            Id = id;
+        }
+
+        void IActor.Restore()
+        {
+            IsAlive = true;
+        }
+
+        public bool HasProp<T>() where T : struct => _world.GetChunk<T>().Has(Id) && !_disabledProperties.Contains(typeof(T));
+        public ref T GetProp<T>() where T : struct => ref _world.GetChunk<T>().Get(Id);
+        public object GetPropObject(Type type) => _world.GetChunkDynamic(type).Get(Id);
+
+        public IActor SetPropertyEnabled<T>(bool isEnabled) where T : struct
+        {
+            var type = typeof(T);
+            if (!isEnabled && !_disabledProperties.Contains(type))
+            {
+                _disabledProperties.Add(type);
+            }
+            else if (isEnabled && _world.GetChunk<T>().Has(Id) && _disabledProperties.Contains(type))
+            {
+                _disabledProperties.Remove(type);
+            }
+
+            return this;
+        }
+
+        public IActor SetDefaultPropertyEnabled<T>(bool isEnabled) where T : struct
+        {
+            if (!isEnabled && HasProp<T>())
+            {
+                RemoveProp<T>();
+            }
+            else if (isEnabled && !HasProp<T>())
+            {
+                AddProp<T>();
+            }
+
+            return this;
+        }
+
+        public IActor AddProp<T>(ref T property) where T : struct
+        {
+            if (HasProp<T>())
+            {
+                return ReplaceProp(ref property);
+            }
+
+            AddPropInternal(ref property);
+            OnPropertyAdded.Invoke(this, typeof(T));
+            return this;
+        }
+
+        public IActor AddProp<T>(T property = default) where T : struct
+        {
+            return AddProp(ref property);
+        }
+
+        public IActor AddTemporaryProp<T>(int lifecyclesCount = 1, T property = default) where T : struct
+        {
+            return AddTemporaryProp(ref property, lifecyclesCount);
+        }
+
+        public IActor AddTemporaryProp<T>(ref T property, int lifecyclesCount = 1) where T : struct
+        {
+            if (lifecyclesCount < 1)
+            {
+                lifecyclesCount = 1;
+            }
+
+            if (HasProp<T>())
+            {
+                return this;
+            }
+
+            OnTemporaryPropertyAdded.Invoke(this, property, lifecyclesCount);
+            return this;
+        }
+
+        public IActor RestorePropFromObject(object property)
+        {
+            var type = property.GetType();
+            _properties.Add(property.GetType());
+            _world.GetChunkDynamic(type).Add(Id, property);
+            OnPropertyAdded?.Invoke(this, type);
+            return this;
+        }
+
+        public IActor ReplaceProp<T>(ref T property) where T : struct
+        {
+            if (HasProp<T>())
+            {
+                RemovePropInternal<T>();
+            }
+
+            AddPropInternal(ref property);
+            OnPropertyReplaced.Invoke(this, typeof(T));
+            return this;
+        }
+
+        public IActor ReplaceProp<T>(T property) where T : struct
+        {
+            return ReplaceProp(ref property);
+        }
+
+        public IActor RemoveProp<T>() where T : struct
+        {
+            RemovePropInternal<T>();
+            OnPropertyRemoved.Invoke(this, typeof(T));
+            return this;
+        }
+
+        public void Release()
+        {
+            _disabledProperties.Clear();
+            _properties.Clear();
+            IsAlive = false;
+        }
+
+        private void AddPropInternal<T>(ref T property) where T : struct
+        {
+            var type = typeof(T);
+            if (_disabledProperties.Contains(type))
+            {
+                _disabledProperties.Remove(type);
+                RemovePropInternal<T>();
+            }
+
+            _properties.Add(type);
+            _world.GetChunk<T>().Add(Id, ref property);
+        }
+
+        private void RemovePropInternal<T>() where T : struct
+        {
+            var type = typeof(T);
+            if (_disabledProperties.Contains(type))
+            {
+                _disabledProperties.Remove(type);
+            }
+
+            _properties.Remove(type);
+            _world.GetChunk<T>().Remove(Id);
+        }
+    }
+}
