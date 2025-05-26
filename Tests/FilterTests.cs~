@@ -21,7 +21,7 @@ namespace AxeEngine.Tests
         }
 
         [Test]
-        public async Task Filter_DontClearAfterTime_True()
+        public async void Filter_DontClearAfterTime_True()
         {
             var actor = _world.CreateActor();
             actor.AddProp<EmptyProperty>();

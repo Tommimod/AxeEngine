@@ -52,8 +52,7 @@ namespace AxeEngine
         {
             foreach (var filter in _filters)
             {
-                ref var options = ref filter.GetOptions();
-                if (options.IsEquals(filterOption))
+                if (filter.Options.IsEquals(filterOption))
                 {
                     return filter;
                 }
@@ -61,7 +60,7 @@ namespace AxeEngine
 
             var newFilter = new Filter(this);
             _filters.Add(newFilter);
-            return newFilter.Build(ref filterOption);
+            return newFilter.Build(filterOption);
         }
 
         /// <summary>
