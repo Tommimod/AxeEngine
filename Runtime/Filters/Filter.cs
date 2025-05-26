@@ -8,11 +8,7 @@ namespace AxeEngine
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
     public class Filter
     {
-        /// <summary>
-        /// Applied filter options
-        /// </summary>
-        internal FilterOption Options { get; private set; }
-
+        private FilterOption _options;
         private readonly World _world;
         private readonly HashSet<IActor> _actors = new();
         private IActor[] _bufferArray = Array.Empty<IActor>();
@@ -22,6 +18,11 @@ namespace AxeEngine
         internal Filter(World world)
         {
             _world = world;
+        }
+
+        internal ref FilterOption GetOptions()
+        {
+            return ref _options;
         }
 
         internal void OnActorReleased(IActor actor)
@@ -34,7 +35,7 @@ namespace AxeEngine
 
         internal void OnActorChanged(IActor actor)
         {
-            var isValid = Options.IsValid(actor);
+            var isValid = _options.IsValid(actor);
             if (isValid)
             {
                 _actors.Add(actor);
@@ -77,18 +78,18 @@ namespace AxeEngine
         /// </summary>
         /// <param name="options"></param>
         /// <returns></returns>
-        internal Filter Build(FilterOption options)
+        internal Filter Build(ref FilterOption options)
         {
             if (_isBuild)
             {
                 return this;
             }
 
-            Options = options;
+            _options = options;
             var allActors = _world.GetAllActors();
             foreach (var actor in allActors)
             {
-                var isValid = Options.IsValid(actor);
+                var isValid = _options.IsValid(actor);
                 if (!isValid)
                 {
                     continue;

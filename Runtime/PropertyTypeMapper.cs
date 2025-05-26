@@ -5,13 +5,13 @@ namespace AxeEngine
 {
     public static class PropertyTypeMapper
     {
-        private static readonly Dictionary<Type, int> _typeToIndex = new Dictionary<Type, int>();
-        private static readonly List<Type> _indexToType = new List<Type>();
-        private static int _nextIndex = 0;
+        private static readonly Dictionary<Type, int> _typeToIndex = new();
+        private static readonly List<Type> _indexToType = new();
+        private static int _nextIndex;
 
         public static int GetComponentIndex(Type type)
         {
-            if (_typeToIndex.TryGetValue(type, out int index))
+            if (_typeToIndex.TryGetValue(type, out var index))
             {
                 return index;
             }

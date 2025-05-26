@@ -8,29 +8,29 @@ namespace AxeEngine
     [BurstCompile]
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
-    public readonly struct FilterOption : IEquatable<FilterOption>
+    public readonly struct FilterOption
     {
-        private readonly NativeArray<ulong> _withMasks;
-        private readonly NativeArray<ulong> _withAnyMasks;
-        private readonly NativeArray<ulong> _withoutMasks;
+        private readonly NativeArray<uint> _withMasks;
+        private readonly NativeArray<uint> _withAnyMasks;
+        private readonly NativeArray<uint> _withoutMasks;
         private readonly int _maskCount;
 
         /// <summary>
         /// Use for create initialized FilterOption
         /// maskCount - count of supported components (mask count * 64)
         /// </summary>
-        public static FilterOption Empty => new(2);
+        public static FilterOption Empty => new(1);
 
         /// <summary>
         /// Default constructor
         /// </summary>
         /// <param name="maskCount">maskCount - count of supported components (mask count * 64)</param>
-        public FilterOption(int maskCount)
+        private FilterOption(int maskCount)
         {
             _maskCount = maskCount;
-            _withMasks = new NativeArray<ulong>(maskCount, Allocator.Persistent);
-            _withAnyMasks = new NativeArray<ulong>(maskCount, Allocator.Persistent);
-            _withoutMasks = new NativeArray<ulong>(maskCount, Allocator.Persistent);
+            _withMasks = new NativeArray<uint>(maskCount, Allocator.Domain);
+            _withAnyMasks = new NativeArray<uint>(maskCount, Allocator.Domain);
+            _withoutMasks = new NativeArray<uint>(maskCount, Allocator.Domain);
         }
 
         public bool IsEquals(FilterOption other)
@@ -185,7 +185,7 @@ namespace AxeEngine
                 .AddTypeToMask<T7>(_withoutMasks);
         }
 
-        private FilterOption AddTypeToMask<T>(NativeArray<ulong> masks) where T : struct
+        private FilterOption AddTypeToMask<T>(NativeArray<uint> masks) where T : struct
         {
             var index = PropertyTypeMapper.GetComponentIndex(typeof(T));
             var arrayIndex = PropertyTypeMapper.GetMaskArrayIndex(index);
@@ -195,7 +195,7 @@ namespace AxeEngine
                 throw new Exception("Component index out of range. Increase maskCount.");
             }
 
-            masks[arrayIndex] |= 1UL << bitIndex;
+            masks[arrayIndex] |= 1U << bitIndex;
             return this;
         }
 
