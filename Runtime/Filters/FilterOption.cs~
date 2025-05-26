@@ -10,9 +10,9 @@ namespace AxeEngine
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
     public readonly struct FilterOption
     {
-        private readonly NativeArray<uint> _withMasks;
-        private readonly NativeArray<uint> _withAnyMasks;
-        private readonly NativeArray<uint> _withoutMasks; 
+        private readonly NativeArray<ulong> _withMasks;
+        private readonly NativeArray<ulong> _withAnyMasks;
+        private readonly NativeArray<ulong> _withoutMasks;
         private readonly int _maskCount;
 
         /// <summary>
@@ -28,9 +28,9 @@ namespace AxeEngine
         private FilterOption(int maskCount)
         {
             _maskCount = maskCount;
-            _withMasks = new NativeArray<uint>(maskCount, Allocator.Domain);
-            _withAnyMasks = new NativeArray<uint>(maskCount, Allocator.Domain);
-            _withoutMasks = new NativeArray<uint>(maskCount, Allocator.Domain);
+            _withMasks = new NativeArray<ulong>(maskCount, Allocator.Domain);
+            _withAnyMasks = new NativeArray<ulong>(maskCount, Allocator.Domain);
+            _withoutMasks = new NativeArray<ulong>(maskCount, Allocator.Domain);
         }
 
         public bool IsEquals(FilterOption other)
@@ -185,7 +185,7 @@ namespace AxeEngine
                 .AddTypeToMask<T7>(_withoutMasks);
         }
 
-        private FilterOption AddTypeToMask<T>(NativeArray<uint> masks) where T : struct
+        private FilterOption AddTypeToMask<T>(NativeArray<ulong> masks) where T : struct
         {
             var index = PropertyTypeMapper.GetComponentIndex(typeof(T));
             var arrayIndex = PropertyTypeMapper.GetMaskArrayIndex(index);
@@ -195,7 +195,7 @@ namespace AxeEngine
                 throw new Exception("Component index out of range. Increase maskCount.");
             }
 
-            masks[arrayIndex] |= 1U << bitIndex;
+            masks[arrayIndex] |= 1UL << bitIndex;
             return this;
         }
 
