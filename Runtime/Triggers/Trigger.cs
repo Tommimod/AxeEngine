@@ -9,6 +9,7 @@ namespace AxeEngine
     public class Trigger
     {
         private readonly HashSet<IActor> _validActors = new();
+        private readonly HashSet<IActor> _resultActors = new();
 
         private Type[] _shouldBeAddedTypes = new Type[7];
         private Type[] _shouldBeReplacedTypes = new Type[7];
@@ -96,7 +97,19 @@ namespace AxeEngine
             _validActors.Clear();
         }
 
-        internal HashSet<IActor> GetValidActors() => _validActors;
+        internal HashSet<IActor> GetValidActors(Func<IActor, bool> filter)
+        {
+            _resultActors.Clear();
+            foreach (var actor in _validActors)
+            {
+                if (filter(actor))
+                {
+                     _resultActors.Add(actor);
+                }
+            }
+
+            return _validActors;
+        }
 
         public Trigger Added<T>() where T : struct
         {
