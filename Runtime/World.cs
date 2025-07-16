@@ -30,8 +30,8 @@ namespace AxeEngine
         private readonly Dictionary<Type, object> _componentStorage = new();
         private readonly WorldAbilityManager _abilityManager;
         private ObjectPool<IActor> _objectPool;
-        private readonly List<TemporaryPropertyLifeData> _temporaryPropertys = new();
-        private TemporaryPropertyLifeData[] _temporaryPropertysBuffer = new TemporaryPropertyLifeData[64];
+        private readonly List<TemporaryPropertyLifeData> _temporaryProperties = new();
+        private TemporaryPropertyLifeData[] _temporaryPropertiesBuffer = new TemporaryPropertyLifeData[64];
         private int _lastId = 1;
 
         public World()
@@ -97,7 +97,7 @@ namespace AxeEngine
                 }
             }
 
-            return default;
+            return null;
         }
 
         internal void AddTrigger(Trigger trigger) => _triggers.Add(trigger);
@@ -128,37 +128,37 @@ namespace AxeEngine
         private void AbilitiesCycleFinished()
         {
             ClearTriggers();
-            if (_temporaryPropertys.Count == 0)
+            if (_temporaryProperties.Count == 0)
             {
                 return;
             }
 
-            if (_temporaryPropertysBuffer.Length < _temporaryPropertys.Count)
+            if (_temporaryPropertiesBuffer.Length < _temporaryProperties.Count)
             {
-                Array.Resize(ref _temporaryPropertysBuffer, _temporaryPropertys.Count);
+                Array.Resize(ref _temporaryPropertiesBuffer, _temporaryProperties.Count);
             }
 
-            var count = _temporaryPropertys.Count;
-            _temporaryPropertys.CopyTo(_temporaryPropertysBuffer);
+            var count = _temporaryProperties.Count;
+            _temporaryProperties.CopyTo(_temporaryPropertiesBuffer);
             var offset = 0;
             for (var i = 0; i < count; i++)
             {
-                if (_temporaryPropertysBuffer[i].Actor == null)
+                if (_temporaryPropertiesBuffer[i].Actor == null)
                 {
                     continue;
                 }
 
-                _temporaryPropertysBuffer[i].Decrement();
-                _temporaryPropertys[i - offset] = _temporaryPropertysBuffer[i];
-                if (_temporaryPropertysBuffer[i].LifecycleCount > 0)
+                _temporaryPropertiesBuffer[i].Decrement();
+                _temporaryProperties[i - offset] = _temporaryPropertiesBuffer[i];
+                if (_temporaryPropertiesBuffer[i].LifecycleCount > 0)
                 {
                     continue;
                 }
 
                 offset++;
-                _temporaryPropertys.Remove(_temporaryPropertysBuffer[i]);
-                _temporaryPropertysBuffer[i].Actor.RemovePropInternal(_temporaryPropertysBuffer[i].PropertyObject);
-                _temporaryPropertysBuffer[i] = default;
+                _temporaryProperties.Remove(_temporaryPropertiesBuffer[i]);
+                _temporaryPropertiesBuffer[i].Actor.RemovePropInternal(_temporaryPropertiesBuffer[i].PropertyObject);
+                _temporaryPropertiesBuffer[i] = default;
             }
         }
 
@@ -182,7 +182,7 @@ namespace AxeEngine
 
         private void OnActorAddTemporaryProperty(IActor actor, object actorProperty, int lifecyclesCount)
         {
-            _temporaryPropertys.Add(new TemporaryPropertyLifeData(actor, actorProperty, lifecyclesCount));
+            _temporaryProperties.Add(new TemporaryPropertyLifeData(actor, actorProperty, lifecyclesCount));
         }
 
         private void OnGetFromPull(IActor actor)
@@ -251,6 +251,7 @@ namespace AxeEngine
 
         public void Dispose()
         {
+            _abilityManager.CycleFinished -= AbilitiesCycleFinished;
             _abilityManager?.Dispose();
             _objectPool?.Dispose();
             _actors.Clear();

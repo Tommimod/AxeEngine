@@ -140,25 +140,8 @@ namespace AxeEngine
                     continue;
                 }
 
-                var execute = true;
-                var actors = reactiveAbility.Trigger.GetValidActors();
+                var actors = reactiveAbility.Trigger.GetValidActors(reactiveAbility.IsCanExecute);
                 if (actors.Count == 0)
-                {
-                    continue;
-                }
-
-                foreach (var actor in actors)
-                {
-                    if (reactiveAbility.IsCanExecute(actor))
-                    {
-                        continue;
-                    }
-
-                    execute = false;
-                    break;
-                }
-
-                if (!execute)
                 {
                     continue;
                 }
